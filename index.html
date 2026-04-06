@@ -585,7 +585,7 @@ async function loadSellersFirebase(){
 function seedLocalSellers(){
   sellers=[
     {id:'s1',name:'Eder',  color:'#b8964e',bg:'linear-gradient(135deg,#b8964e,#d4b06a)',pass:''},
-    {id:'s2',name:'Flávio',color:'#4a90d9',bg:'linear-gradient(135deg,#3a7bc8,#6aaef0)',pass:''},
+    
   ];
   saveLocalSellers();
 }
@@ -593,7 +593,7 @@ function seedLocalSellers(){
 async function seedDefaultSellers(){
   const defaults=[
     {id:'s1',name:'Eder',  color:'#b8964e',bg:'linear-gradient(135deg,#b8964e,#d4b06a)',pass:''},
-    {id:'s2',name:'Flávio',color:'#4a90d9',bg:'linear-gradient(135deg,#3a7bc8,#6aaef0)',pass:''},
+   
   ];
   for(const s of defaults){
     await writeSeller(s);
