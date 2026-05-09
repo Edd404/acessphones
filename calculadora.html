@@ -831,13 +831,15 @@ render();
 
 // ── DRAWER ────────────────────────────────────────────────────────
 function openDrw(){
-  document.getElementById('drw-overlay').classList.add('open');
-  document.getElementById('drw').classList.add('open');
+  var o=document.getElementById('drw-overlay'), d=document.getElementById('drw');
+  if(o) o.classList.add('open');
+  if(d) d.classList.add('open');
   document.body.style.overflow='hidden';
 }
 function closeDrw(){
-  document.getElementById('drw-overlay').classList.remove('open');
-  document.getElementById('drw').classList.remove('open');
+  var o=document.getElementById('drw-overlay'), d=document.getElementById('drw');
+  if(o) o.classList.remove('open');
+  if(d) d.classList.remove('open');
   document.body.style.overflow='';
 }
 function navTo(e, href){
@@ -870,6 +872,16 @@ function navTo(e, href){
 })();
 
 
+
+// ── INIT ─────────────────────────────────────────────────────────
+document.addEventListener('fb-ready', function(){
+  initDark();
+  if(window._fbOK && window._fb){
+    initFirebaseFeatures();
+  }
+});
+if(window._fbReady){ document.dispatchEvent(new Event('fb-ready')); }
+
 // ── SAFETY FALLBACK ──────────────────────────────────────────────
 // If Firebase CDN fails or event misfires, show app after 6s
 setTimeout(function(){
@@ -881,8 +893,7 @@ setTimeout(function(){
   }
 }, 6000);
 </script>
-</body>
-</html>
+
 <!-- DRAWER -->
 <div class="drw-overlay" id="drw-overlay" onclick="closeDrw()"></div>
 <div class="drw" id="drw">
@@ -941,4 +952,5 @@ setTimeout(function(){
   <div class="drw-footer">Acess Phones · v2.0</div>
 </div>
 
-
+</body>
+</html>

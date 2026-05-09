@@ -1241,13 +1241,15 @@ document.addEventListener('fb-ready', () => {
 
 // ── DRAWER ────────────────────────────────────────────────────────
 function openDrw(){
-  document.getElementById('drw-overlay').classList.add('open');
-  document.getElementById('drw').classList.add('open');
+  var o=document.getElementById('drw-overlay'), d=document.getElementById('drw');
+  if(o) o.classList.add('open');
+  if(d) d.classList.add('open');
   document.body.style.overflow='hidden';
 }
 function closeDrw(){
-  document.getElementById('drw-overlay').classList.remove('open');
-  document.getElementById('drw').classList.remove('open');
+  var o=document.getElementById('drw-overlay'), d=document.getElementById('drw');
+  if(o) o.classList.remove('open');
+  if(d) d.classList.remove('open');
   document.body.style.overflow='';
 }
 function navTo(e, href){
