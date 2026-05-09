@@ -1279,6 +1279,17 @@ function navTo(e, href){
   },{passive:true});
 })();
 
+
+// ── SAFETY FALLBACK ──────────────────────────────────────────────
+// If Firebase CDN fails or event misfires, show app after 6s
+setTimeout(function(){
+  var ld = document.getElementById('loading');
+  if(ld && ld.style.display !== 'none'){
+    window._fbOK = false;
+    window._fbReady = true;
+    document.dispatchEvent(new Event('fb-ready'));
+  }
+}, 6000);
 </script>
 </body>
 </html>

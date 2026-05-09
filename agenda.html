@@ -42,11 +42,11 @@
     isConnected = true;
     window._fbRef = { push, set, remove, onValue, serverTimestamp, appointmentsRef, ref, db };
     window._fbReady = true;
-    document.dispatchEvent(new Event('firebase-ready'));
+    document.dispatchEvent(new Event('fb-ready'));
   } catch(e) {
     console.warn('Firebase não configurado ainda. Usando modo local.', e);
     window._fbReady = false;
-    document.dispatchEvent(new Event('firebase-ready'));
+    document.dispatchEvent(new Event('fb-ready'));
   }
 </script>
 
@@ -992,7 +992,19 @@ async function deleteAppointment(key, dateStr){
 }
 
 // ── INIT ─────────────────────────────────────────────────────
-document.addEventListener('firebase-ready', ()=>{
+document.addEventListener('fb-ready', ()=>{
+  // Compatibility: map _fb to _fbRef pattern used by agenda
+  if(window._fb && !window._fbRef){
+    window._fbRef = {
+      db: window._fb.db,
+      ref: window._fb.ref,
+      onValue: window._fb.onValue,
+      set: window._fb.set,
+      push: window._fb.push,
+      remove: window._fb.remove,
+      appointmentsRef: window._fb.ref(window._fb.db, 'acess_agenda')
+    };
+  }
   const today = new Date();
   curYear  = today.getFullYear();
   curMonth = today.getMonth();
@@ -1092,6 +1104,17 @@ function navTo(e, href){
   },{passive:true});
 })();
 
+
+// ── SAFETY FALLBACK ──────────────────────────────────────────────
+// If Firebase CDN fails or event misfires, show app after 6s
+setTimeout(function(){
+  var ld = document.getElementById('loading');
+  if(ld && ld.style.display !== 'none'){
+    window._fbOK = false;
+    window._fbReady = true;
+    document.dispatchEvent(new Event('fb-ready'));
+  }
+}, 6000);
 </script>
 </body>
 </html>
