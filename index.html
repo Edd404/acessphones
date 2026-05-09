@@ -1180,7 +1180,6 @@ async function writeSeller(s){
 function showSS(){
   document.getElementById('loading').style.display='none';
   document.getElementById('app').style.display='none';
-  document.getElementById('bnav').style.display='none';
   document.getElementById('ss').style.display='flex';
   buildSSGrid();
 }
@@ -1313,7 +1312,6 @@ function selectSeller(id){
   try{ localStorage.setItem('acess_active_seller', id); }catch(e){}
   document.getElementById('ss').style.display='none';
   document.getElementById('app').style.display='block';
-  document.getElementById('bnav').style.display='flex';
   selDate=todayStr();
   initSellerUI();
   if(fbMode) listenEntries();

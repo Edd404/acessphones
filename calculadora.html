@@ -690,7 +690,6 @@ function buildInsta(){
 function switchView(v){
   document.getElementById('view-calc').style.display=v==='calc'?'block':'none';
   document.getElementById('view-quote').classList.toggle('active',v==='quote');
-  document.getElementById('bnav').style.display=v==='quote'?'none':'flex';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
