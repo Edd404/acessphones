@@ -864,4 +864,121 @@ function _gCopyCard(method,total,parcel,n){
   t.textContent=ok?`${method} — copiado!`:'Toque novamente para copiar';
   t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);
 }
+
+// ── ORÇAMENTO GLOBAL ─────────────────────────────────────────────
+function openSheet(){
+  document.getElementById('sh-txt').textContent = _buildOrc();
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+  _resetSh();
+}
+function closeSheet(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+}
+function _resetSh(){
+  document.getElementById('cb-i').textContent='💬';
+  document.getElementById('cb-l').textContent='WhatsApp';
+  document.getElementById('ib-i').textContent='📷';
+  document.getElementById('ib-l').textContent='Instagram';
+}
+function copyWpp(){
+  try{navigator.vibrate&&navigator.vibrate(12);}catch(e){}
+  const text = _buildOrc();
+  const ok = _cpG(text);
+  if(ok){
+    document.getElementById('cb-i').textContent='✅';
+    document.getElementById('cb-l').textContent='Copiado!';
+    setTimeout(()=>{closeSheet();_resetSh();},900);
+  } else {
+    const t=document.getElementById('toast');
+    t.textContent='Erro ao copiar';t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2200);
+  }
+}
+function copyInsta(){
+  try{navigator.vibrate&&navigator.vibrate(12);}catch(e){}
+  const text = _buildInsta();
+  const ok = _cpG(text);
+  if(ok){
+    document.getElementById('ib-i').textContent='✅';
+    document.getElementById('ib-l').textContent='Copiado!';
+    setTimeout(()=>{closeSheet();_resetSh();},900);
+  } else {
+    const t=document.getElementById('toast');
+    t.textContent='Erro ao copiar';t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2200);
+  }
+}
+function _cpG(text){
+  const ta=document.createElement('textarea');
+  ta.value=text;ta.setAttribute('readonly','');
+  ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,99999);
+  let ok=false;try{ok=document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);return ok;
+}
+function _buildOrc(){
+  const p = _gPrice;
+  const product = document.getElementById('product-input').value.trim();
+  const maxN = _gFilter==='6'?6:_gFilter==='12'?12:99;
+  const now = new Date();
+  const pad = n=>String(n).padStart(2,'0');
+  const dateStr = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`;
+  const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  // detect seller name from localStorage
+  let sellerName = '';
+  try{
+    const sid = localStorage.getItem('acess_active_seller');
+    const raw = localStorage.getItem('acess_sellers_v1');
+    const list = raw ? JSON.parse(raw) : [];
+    const s = list.find(x=>x.id===sid);
+    if(s) sellerName = s.name;
+  }catch(e){}
+  const L=[];
+  L.push('📱 *Acess Phones — Orçamento*');
+  L.push('━━━━━━━━━━━━━━━━━━━━━━');
+  L.push(`📅 ${dateStr} · ${timeStr}`);
+  if(product) L.push(`🛍️ *${product}*`);
+  L.push(`📦 Tipo: ${_gTipo}`);
+  L.push(`💰 Preço base: *R$ ${_fmtG(p)}*`);
+  L.push('');L.push('💳 *Formas de Pagamento*');L.push('──────────────────────');L.push('');
+  RATES_GLOBAL.forEach(rate=>{
+    if(rate.n>maxN)return;
+    const total=rate.calc(p), parcel=total/rate.n;
+    L.push(`• *${rate.label}*`);
+    if(rate.n!==1) L.push(`  ${rate.n}x de R$ ${_fmtG(parcel)}`);
+    L.push(`  Total: R$ ${_fmtG(total)}`);
+    L.push('');
+  });
+  if(sellerName){L.push(`👤 *Atendimento:* ${sellerName}`);L.push('');}
+  L.push('_Acess Phones — Qualidade e confiança._');
+  return L.join('\n');
+}
+function _buildInsta(){
+  const p = _gPrice;
+  const product = document.getElementById('product-input').value.trim();
+  const maxN = _gFilter==='6'?6:_gFilter==='12'?12:99;
+  let sellerName = '';
+  try{
+    const sid = localStorage.getItem('acess_active_seller');
+    const raw = localStorage.getItem('acess_sellers_v1');
+    const list = raw ? JSON.parse(raw) : [];
+    const s = list.find(x=>x.id===sid);
+    if(s) sellerName = s.name;
+  }catch(e){}
+  const L=[];
+  if(product){L.push(`Produto: ${product}`);L.push('');}
+  RATES_GLOBAL.forEach(rate=>{
+    if(rate.n>maxN)return;
+    const total=rate.calc(p), parcel=total/rate.n;
+    if(rate.n===1){
+      L.push(`${rate.label}: R$ ${_fmtG(total)}`);
+    } else {
+      L.push(`${rate.label}: ${rate.n}x de R$ ${_fmtG(parcel)}`);
+    }
+  });
+  if(sellerName){L.push('');L.push(`Atendimento: ${sellerName}`);}
+  return L.join('\n');
+}
 </script>
