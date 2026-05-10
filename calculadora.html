@@ -780,3 +780,88 @@ document.getElementById('bnav').style.display='flex';
 </nav>
 </body>
 </html>
+<script>
+// ── FUNÇÕES GLOBAIS — chamadas pelo HTML via onclick/oninput ──────
+const RATES_GLOBAL = [
+  {label:'Débito',          n:1,  calc:p=>(100*p/(100-1)),               group:'debito'},
+  {label:'Crédito à Vista', n:1,  calc:p=>(100*p/(100-2.9))+(p*.01),     group:'credito'},
+  {label:'Crédito 2x',      n:2,  calc:p=>(100*p/(100-4))+(p*.01),       group:'credito'},
+  {label:'Crédito 3x',      n:3,  calc:p=>(100*p/(100-4.6))+(p*.01),     group:'credito'},
+  {label:'Crédito 4x',      n:4,  calc:p=>p*1.069,                       group:'credito'},
+  {label:'Crédito 5x',      n:5,  calc:p=>p*1.077,                       group:'credito'},
+  {label:'Crédito 6x',      n:6,  calc:p=>p*1.085,                       group:'credito'},
+  {label:'Crédito 7x',      n:7,  calc:p=>p*1.096,                       group:'credito'},
+  {label:'Crédito 8x',      n:8,  calc:p=>p*1.105,                       group:'credito'},
+  {label:'Crédito 9x',      n:9,  calc:p=>p*1.112,                       group:'credito'},
+  {label:'Crédito 10x',     n:10, calc:p=>p*1.125,                       group:'credito'},
+  {label:'Crédito 11x',     n:11, calc:p=>p*1.135,                       group:'credito'},
+  {label:'Crédito 12x',     n:12, calc:p=>p*1.147,                       group:'credito'},
+  {label:'Crédito 15x',     n:15, calc:p=>p*1.20,                        group:'credito'},
+  {label:'Crédito 18x',     n:18, calc:p=>p*1.23,                        group:'credito'},
+];
+
+let _gPrice = null, _gFilter = 'all', _gTipo = 'Seminovo';
+const _fmtG = v => v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+function onPriceInput(el){
+  const raw = el.value.replace(/\D/g,'');
+  _gPrice = raw ? parseInt(raw,10)/100 : null;
+  window.currentPrice = _gPrice;
+  if(raw){
+    el.value = _fmtG(parseInt(raw,10)/100);
+    setTimeout(()=>{el.selectionStart=el.selectionEnd=el.value.length;},0);
+  }
+  _gRender();
+}
+
+function selectTipo(el){
+  document.querySelectorAll('.tipo-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  _gTipo = el.dataset.tipo || el.textContent.trim();
+  window.currentTipo = _gTipo;
+  _gRender();
+}
+
+function setFilter(val){
+  _gFilter = val;
+  window.currentFilter = val;
+  _gRender();
+}
+
+function _gRender(){
+  document.getElementById('orc-wrap').style.display=(_gPrice&&_gPrice>0)?'block':'none';
+  const cEl = document.getElementById('results-container');
+  if(!_gPrice||_gPrice<=0){
+    cEl.innerHTML='<div class="empty"><div class="empty-icon">💳</div><div class="empty-txt">Digite o preço do produto para<br>ver todas as formas de pagamento</div></div>';
+    return;
+  }
+  const p=_gPrice, maxN=_gFilter==='6'?6:_gFilter==='12'?12:99;
+  let html='',lastGroup=null;
+  const fp=`<div class="sec-hdr"><div class="sec-title">Formas de Pagamento</div><div class="filter-pills"><div class="fpill${_gFilter==='6'?' active':''}" onclick="setFilter('6')">até 6x</div><div class="fpill${_gFilter==='12'?' active':''}" onclick="setFilter('12')">até 12x</div><div class="fpill${_gFilter==='all'?' active':''}" onclick="setFilter('all')">Todas</div></div></div>`;
+  RATES_GLOBAL.forEach(rate=>{
+    if(rate.n>maxN)return;
+    const total=rate.calc(p),parcel=total/rate.n,interest=total-p,free=interest<=.001;
+    if(lastGroup&&lastGroup!==rate.group)html+=`<div class="divider"><div class="dvl"></div><div class="dvt">Crédito</div><div class="dvl"></div></div>`;
+    lastGroup=rate.group;
+    const hl=rate.label==='Débito',bv=!hl&&rate.label==='Crédito à Vista';
+    const pct=((interest/p)*100).toFixed(1).replace('.',',');
+    const itext=free?'Sem juros':`+R$ ${_fmtG(interest)} (${pct}%)`;
+    const ptext=rate.n===1?'Pagamento único':`${rate.n}x de R$ ${_fmtG(parcel)}`;
+    html+=`<div class="rcard${hl?' hl':''}${bv?' bv':''}" onclick="_gCopyCard('${rate.label}',${total},${parcel},${rate.n})">${bv?'<div class="best-tag">✦ Melhor opção</div>':''}<div><div class="rm">${rate.label}</div><div class="rs${free?' free':''}">${itext}</div></div><div class="rr"><div class="rt">R$ ${_fmtG(total)}</div><div class="rp">${ptext}</div></div></div>`;
+  });
+  cEl.innerHTML=fp+`<div class="results-grid">${html}</div>`;
+}
+
+function _gCopyCard(method,total,parcel,n){
+  const text=n===1?`${method}: R$ ${_fmtG(total)}`:`${method}: R$ ${_fmtG(total)} (${n}x de R$ ${_fmtG(parcel)})`;
+  const ta=document.createElement('textarea');
+  ta.value=text;ta.setAttribute('readonly','');
+  ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,99999);
+  let ok=false;try{ok=document.execCommand('copy')}catch(e){}
+  document.body.removeChild(ta);
+  const t=document.getElementById('toast');
+  t.textContent=ok?`${method} — copiado!`:'Toque novamente para copiar';
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);
+}
+</script>
