@@ -1016,7 +1016,7 @@ document.addEventListener('fb-ready', function(){
   initDark();
   loadFirebase();
   renderAll();
-  const ld = document.getElementById('loading');
+  var ld = document.getElementById('loading');
   if(ld) ld.style.display = 'none';
   document.getElementById('bnav').style.display = 'flex';
 });
@@ -1029,7 +1029,6 @@ document.addEventListener('fb-ready', function(){
   <a class="bni" href="agenda.html" style="text-decoration:none"><span class="bni-ico">📅</span><span class="bni-lbl">Agenda</span></a>
   <div class="bni active"><span class="bni-ico">💰</span><span class="bni-lbl">Tabela</span></div>
   <a class="bni" href="frases.html" style="text-decoration:none"><span class="bni-ico">⚡</span><span class="bni-lbl">Arsenal</span></a>
-  
 </nav>
 </body>
 </html>

@@ -469,8 +469,30 @@ function toggleDark(){
 function selectTipo(el){
   document.querySelectorAll('.tipo-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
-  currentTipo=el.dataset.tipo||el.textContent.trim();
+  currentTipo = el.dataset.tipo || el.textContent.trim();
   render();
+}
+
+// ── PRICE INPUT ────────────────────────────────────────────────
+const c = document.getElementById('results-container');
+
+function onPriceInput(el){
+  let raw = el.value.replace(/\D/g,'');
+  currentPrice = raw ? parseInt(raw,10)/100 : null;
+  if(raw){
+    el.value = (parseInt(raw,10)/100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    setTimeout(()=>{el.selectionStart=el.selectionEnd=el.value.length;},0);
+  }
+  render();
+}
+
+function updateOrcBtn(){
+  document.getElementById('orc-wrap').style.display=(currentPrice&&currentPrice>0)?'block':'none';
+}
+
+function render(){
+  updateOrcBtn();
+  setFilter(currentFilter);
 }
 
 // ── FILTER ─────────────────────────────────────────────────────
@@ -755,7 +777,6 @@ document.getElementById('bnav').style.display='flex';
   <a class="bni" href="agenda.html" style="text-decoration:none"><span class="bni-ico">📅</span><span class="bni-lbl">Agenda</span></a>
   <a class="bni" href="tabela.html" style="text-decoration:none"><span class="bni-ico">💰</span><span class="bni-lbl">Tabela</span></a>
   <a class="bni" href="frases.html" style="text-decoration:none"><span class="bni-ico">⚡</span><span class="bni-lbl">Arsenal</span></a>
-  
 </nav>
 </body>
 </html>
