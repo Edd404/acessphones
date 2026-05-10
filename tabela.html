@@ -1018,6 +1018,12 @@ document.addEventListener('fb-ready', function(){
   renderAll();
   var ld = document.getElementById('loading');
   if(ld) ld.style.display = 'none';
+  var hdr = document.getElementById('main-hdr');
+  if(hdr) hdr.style.display = 'block';
+  var sb = document.getElementById('sync-bar');
+  if(sb) sb.style.display = 'block';
+  var mw = document.getElementById('main-wrap');
+  if(mw) mw.style.display = 'block';
   document.getElementById('bnav').style.display = 'flex';
 });
 </script>
