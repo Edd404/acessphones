@@ -1010,6 +1010,16 @@ setTimeout(function(){
     document.dispatchEvent(new Event('fb-ready'));
   }
 }, 6000);
+
+// ── STARTUP ──────────────────────────────────────────────────────
+document.addEventListener('fb-ready', function(){
+  initDark();
+  loadFirebase();
+  renderAll();
+  const ld = document.getElementById('loading');
+  if(ld) ld.style.display = 'none';
+  document.getElementById('bnav').style.display = 'flex';
+});
 </script>
 
 <!-- BOTTOM NAV -->
@@ -1019,7 +1029,7 @@ setTimeout(function(){
   <a class="bni" href="agenda.html" style="text-decoration:none"><span class="bni-ico">📅</span><span class="bni-lbl">Agenda</span></a>
   <div class="bni active"><span class="bni-ico">💰</span><span class="bni-lbl">Tabela</span></div>
   <a class="bni" href="frases.html" style="text-decoration:none"><span class="bni-ico">⚡</span><span class="bni-lbl">Arsenal</span></a>
-  <a class="bni" href="galeria.html" style="text-decoration:none"><span class="bni-ico">📸</span><span class="bni-lbl">Vitrine</span></a>
+  
 </nav>
 </body>
 </html>

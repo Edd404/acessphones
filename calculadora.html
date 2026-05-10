@@ -116,10 +116,6 @@ body.dark .orc-btn{background:var(--gold);color:#000}
 .orc-btn:active{transform:scale(.98);opacity:.9}
 /* BOTTOM NAV */
 
-body.dark 
-.bnav-item,
-.bnav-item:active,
-
 .overlay.open{opacity:1;pointer-events:all}
 .sheet{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-radius:24px 24px 0 0;border-top:1px solid var(--border);z-index:400;padding:0 0 calc(12px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .4s cubic-bezier(.32,0,.15,1);max-height:88dvh;display:flex;flex-direction:column}
 .sheet.open{transform:translateY(0)}
@@ -470,9 +466,10 @@ function toggleDark(){
 }
 
 // ── TIPO ───────────────────────────────────────────────────────
-function selectTipo(el){currentPrice=val;
-  el.value=val.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-  setTimeout(()=>{el.selectionStart=el.selectionEnd=el.value.length;},0);
+function selectTipo(el){
+  document.querySelectorAll('.tipo-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  currentTipo=el.dataset.tipo||el.textContent.trim();
   render();
 }
 
@@ -728,6 +725,7 @@ initPWA();
 detectActiveSeller();
 switchView('calc');
 render();
+document.getElementById('bnav').style.display='flex';
 
 
 
@@ -757,7 +755,7 @@ render();
   <a class="bni" href="agenda.html" style="text-decoration:none"><span class="bni-ico">📅</span><span class="bni-lbl">Agenda</span></a>
   <a class="bni" href="tabela.html" style="text-decoration:none"><span class="bni-ico">💰</span><span class="bni-lbl">Tabela</span></a>
   <a class="bni" href="frases.html" style="text-decoration:none"><span class="bni-ico">⚡</span><span class="bni-lbl">Arsenal</span></a>
-  <a class="bni" href="galeria.html" style="text-decoration:none"><span class="bni-ico">📸</span><span class="bni-lbl">Vitrine</span></a>
+  
 </nav>
 </body>
 </html>
