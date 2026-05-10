@@ -560,9 +560,6 @@ function todayStr(){ const d=new Date(); return `${d.getFullYear()}-${pad(d.getM
 function haptic(ms=10){ try{navigator.vibrate&&navigator.vibrate(ms);}catch(e){} }
 
 // Page transition
-document.querySelectorAll(');
-});
-window.addEventListener('online',()=>{ if(fbMode) setSyncBar('online','🟢 Em tempo real — agenda compartilhada'); });
 window.addEventListener('offline',()=>{ setSyncBar('offline','🔴 Sem conexão — dados salvos localmente'); });
 
 // ── DARK ─────────────────────────────────────────────────────
@@ -971,9 +968,7 @@ function scheduleNotifications(){
   updateNavBadge(soon.length);
 }
 
-function updateNavBadge(count){
-  const agendaNav=document.querySelector('
-}
+function updateNavBadge(count){}
 
 function initPTR(){
   const content=document.getElementById('main-content');

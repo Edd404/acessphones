@@ -954,16 +954,6 @@ function handleFileSelect(e){
 }
 
 function setQuality(btn){
-  document.querySelectorAll('.up-qbtn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  _upQuality = parseFloat(btn.dataset.q);
-  if(_upFile) estimateSize();
-}
-
-function estimateSize(){
-  if(!_upFile) return;
-  const approx = Math.round(_upFile.size * _upQuality * 0.7 / 1024);
-  $('up-fileinfo').textContent = `Tamanho estimado após compressão: ~${approx < 1024 ? approx+'KB' : (approx/1024).toFixed(1)+'MB'}`;
 }
 
 function compressImage(file, quality, maxW=1600, maxH=2400){
@@ -1006,26 +996,6 @@ async function savePhoto(){
   btn.textContent = 'Salvar Tabela';
 }
 
-// ── NAV TRANSITIONS ───────────────────────────────────────────────
-document.querySelectorAll(');
-});
-
-// ── INIT ─────────────────────────────────────────────────────────
-document.addEventListener('fb-ready', () => {
-  initDark();
-  $('loading').style.display = 'none';
-  document.getElementById('bnav').style.display='flex';
-  $('main-hdr').style.display = 'block';
-  $('sync-bar').style.display = 'block';
-  $('main-wrap').style.display = 'block';
-
-  if(window._fbOK){
-    loadFirebase();
-  } else {
-    loadLocal();
-    setSyncBar('local','⚡ Modo local — configure o Firebase para sync');
-  }
-});
 
 
 

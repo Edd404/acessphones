@@ -420,9 +420,6 @@ function getSeller(){return SELLERS.find(s=>s.id===currentSeller)||null;}
 function haptic(ms=10){ try{navigator.vibrate&&navigator.vibrate(ms);}catch(e){} }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  document.querySelectorAll('.bnav-item[href],);
-  });
-});
 
 window.addEventListener('online',()=>toast('🟢 Conexão restaurada'));
 window.addEventListener('offline',()=>toast('🔴 Sem conexão'));
@@ -473,17 +470,7 @@ function toggleDark(){
 }
 
 // ── TIPO ───────────────────────────────────────────────────────
-function selectTipo(el){
-  document.querySelectorAll('.tipo-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active'); currentTipo=el.dataset.tipo; render();
-}
-
-
-// ── PRICE INPUT ────────────────────────────────────────────────
-function onPriceInput(el){
-  const raw=el.value.replace(/\D/g,'');
-  if(!raw){el.value='';currentPrice=null;render();return;}
-  const val=parseFloat(raw)/100;currentPrice=val;
+function selectTipo(el){currentPrice=val;
   el.value=val.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   setTimeout(()=>{el.selectionStart=el.selectionEnd=el.value.length;},0);
   render();
@@ -492,18 +479,6 @@ function onPriceInput(el){
 // ── FILTER ─────────────────────────────────────────────────────
 function setFilter(val){
   currentFilter=val;
-  document.querySelectorAll('.fpill').forEach(p=>p.classList.toggle('active',p.dataset.f===val));
-  render();
-}
-
-// ── RENDER ─────────────────────────────────────────────────────
-function updateOrcBtn(){
-  const w=document.getElementById('orc-wrap');
-  if(w) w.style.display=(currentPrice&&currentPrice>0)?'block':'none';
-}
-
-function render(){
-  const c=document.getElementById('results-container');
   updateOrcBtn();
   if(!currentPrice||currentPrice<=0){
     c.innerHTML='<div class="empty"><div class="empty-icon">💳</div><div class="empty-txt">Digite o preço do produto para<br>ver todas as formas de pagamento</div></div>';
@@ -759,24 +734,19 @@ render();
 
 
 // ── INIT ─────────────────────────────────────────────────────────
-document.addEventListener('fb-ready', function(){
-  initDark();
-  if(window._fbOK && window._fb){
-    initFirebaseFeatures();
-  }
 });
-if(window._fbReady){ document.dispatchEvent(new Event('fb-ready')); }
 
-// ── SAFETY FALLBACK ──────────────────────────────────────────────
-// If Firebase CDN fails or event misfires, show app after 6s
-setTimeout(function(){
-  var ld = document.getElementById('loading');
-  if(ld && ld.style.display !== 'none'){
-    window._fbOK = false;
-    window._fbReady = true;
-    document.dispatchEvent(new Event('fb-ready'));
+(function(){
+  var pref=localStorage.getItem('acess_dark');
+  var sys=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;
+  if(pref==='1'||(pref===null&&sys)){
+    document.body.classList.add('dark');
+    var btn=document.getElementById('dark-btn');
+    if(btn) btn.textContent='☀️';
   }
-}, 6000);
+})();
+
+
 </script>
 
 

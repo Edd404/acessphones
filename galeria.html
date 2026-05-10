@@ -786,22 +786,6 @@ function lbDownload(){
 function onSearch(q){ _searchQ=q; renderGrid(); }
 function filterGen(g){ _filterGen=g; renderGrid(); }
 
-// ── NAV ───────────────────────────────────────────────────────────
-document.querySelectorAll(');
-});
-
-// ── INIT ─────────────────────────────────────────────────────────
-document.addEventListener('fb-ready',()=>{
-  initDark();
-  $('loading').style.display='none';
-  document.getElementById('bnav').style.display='flex';
-  $('main-hdr').style.display='block';
-  $('sync-bar').style.display='block';
-  $('main-wrap').style.display='block';
-
-  if(window._fbOK){ initFirebase(); }
-  else{ loadLocal(); setSyncBar('local','⚡ Modo local'); }
-});
 
 
 

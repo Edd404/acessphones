@@ -931,11 +931,6 @@ function countUp(el, target, duration=600){
 }
 
 // ── NAV TRANSITION ──────────────────────────────────────────────
-document.querySelectorAll(');
-});
-
-// ── ONLINE / OFFLINE ────────────────────────────────────────────
-window.addEventListener('online', ()=>{ if(fbMode) setSyncBar('online','🟢 Online — dados sincronizados'); });
 window.addEventListener('offline',()=>{ setSyncBar('offline','🔴 Sem conexão — dados salvos localmente'); });
 
 function cpText(txt){
@@ -1510,16 +1505,6 @@ function renderEntries(){
     return;
   }
   c.innerHTML=`<div class="ent-list" id="ent-list">${entries.map(e=>`<div class="eitem" id="ei-${e._fbKey||e.id}">${eHTML(e)}</div>`).join('')}</div>`;
-  document.querySelectorAll('.eitem').forEach(bindSwipe);
-}
-
-function prependEntry(entry){
-  let list=document.getElementById('ent-list');
-  if(!list){
-    document.getElementById('ent-container').innerHTML='<div class="ent-list" id="ent-list"></div>';
-    list=document.getElementById('ent-list');
-  }
-  const div=document.createElement('div');
   div.className='eitem new';div.id=`ei-${entry.id}`;
   div.innerHTML=eHTML(entry);list.insertBefore(div,list.firstChild);
   bindSwipe(div);
@@ -2194,31 +2179,9 @@ function renderMgr(){
 
   // ── POST-RENDER ANIMATIONS ──────────────────────────────────────
   requestAnimationFrame(()=>{
-    // 1. Animate bar chart heights
-    document.querySelectorAll('.wb-col').forEach(col=>{
-      const bar=col.querySelector('.wb-bar');
-      if(bar) bar.style.height=col.dataset.h+'px';
-    });
-    // 2. Animate rank bars
-    document.querySelectorAll('.rank-bar-fill').forEach(el=>{
-      el.style.transition='width .65s cubic-bezier(.34,1.1,.64,1)';
-      el.style.width=el.dataset.w+'%';
-    });
-    // 3. Animate item bars
-    document.querySelectorAll('.item-bar-fill').forEach(el=>{
-      el.style.transition='width .65s cubic-bezier(.34,1.1,.64,1)';
-      el.style.width=el.dataset.w+'%';
-    });
-    // 4. CountUp on ov-val
-    document.querySelectorAll('[data-countup]').forEach(el=>{
-      const target=parseFloat(el.dataset.countup);
-      el.textContent='R$ 0,00';
-      countUp(el,target,700);
-    });
     document.querySelectorAll('[data-countup-int]').forEach(el=>{
-      const target=parseInt(el.dataset.countupInt||el.dataset.countupint||el.getAttribute('data-countup-int'));
-      if(!target){return;}
-      el.textContent='0';
+      const target=parseInt(el.dataset.countupInt||0,10);
+      if(!target) return;
       const startT=performance.now();
       const dur=500;
       (function step(now){
@@ -2229,17 +2192,8 @@ function renderMgr(){
         else el.textContent=target;
       })(startT);
     });
-    // 5. Bar tooltip tap
-    document.querySelectorAll('.wb-col').forEach(col=>{
-      let timer;
-      function showTip(){
-        document.querySelectorAll('.wb-col').forEach(c=>c.classList.remove('tip-open'));
-        col.classList.add('tip-open');
-        clearTimeout(timer);
-        timer=setTimeout(()=>col.classList.remove('tip-open'),2200);
-      }
-      col.addEventListener('click',showTip);
-      col.addEventListener('touchstart',showTip,{passive:true});
+    document.querySelectorAll('[data-w]').forEach(el=>{
+      el.style.width=el.dataset.w+'%';
     });
   });
 }
