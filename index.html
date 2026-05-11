@@ -1294,8 +1294,11 @@ function listenEntries(){
   const eRef=ref(db,`acess_central/entries/${cSeller.id}`);
   _fbEntriesUnsub=onValue(eRef,snap=>{
     const val=snap.val();
-    const arr=val?Object.entries(val).map(([k,v])=>Object.assign({},v,{_fbKey:k})):[];
-    saveLocalEntries(cSeller.id,arr);
+    // Só sobrescreve local se Firebase retornou dados reais
+    if(val){
+      const arr=Object.entries(val).map(([k,v])=>Object.assign({},v,{_fbKey:k}));
+      saveLocalEntries(cSeller.id,arr);
+    }
     buildBtnGrid();buildDayTabs();renderEntries();updateHero();updateRptBtn();
   });
 }
@@ -1374,36 +1377,28 @@ async function confirmEntry(){
   const entry=_pendingEntry;
   _pendingEntry=null;
   document.getElementById('csheet-overlay').classList.remove('open');
+
+  // Salva localmente imediatamente para resposta instantânea
+  const arr=getLocalEntries(cSeller.id);
+  arr.push(entry);saveLocalEntries(cSeller.id,arr);
+  if(selDate===entry.date){
+    updateBadge(entry.type);updateHero();prependEntry(entry);buildDayTabs();
+  } else {
+    selDate=entry.date;buildBtnGrid();buildDayTabs();renderEntries();updateHero();
+  }
+  updateRptBtn();
+  haptic(12);
+  toast(`${entry.emoji} ${entry.label} — R$ ${fmt(entry.value)} registrado`);
+
+  // Sincroniza com Firebase em background
   if(fbMode && window._fbOK){
     try{
       const {db,ref,push}=window._fb;
       await push(ref(db,`acess_central/entries/${cSeller.id}`),entry);
     } catch(e){
-      // Firebase falhou — salvar localmente
-      const arr=getLocalEntries(cSeller.id);
-      arr.push(entry);saveLocalEntries(cSeller.id,arr);
-      if(selDate===entry.date){
-        updateBadge(entry.type);updateHero();prependEntry(entry);buildDayTabs();
-      } else {
-        selDate=entry.date;buildBtnGrid();buildDayTabs();renderEntries();updateHero();
-      }
-      updateRptBtn();
-      toast('⚠️ Sem conexão — salvo localmente');
-      haptic(12);
-      return;
+      toast('⚠️ Salvo localmente — sem conexão com servidor');
     }
-  } else {
-    const arr=getLocalEntries(cSeller.id);
-    arr.push(entry);saveLocalEntries(cSeller.id,arr);
-    if(selDate===entry.date){
-      updateBadge(entry.type);updateHero();prependEntry(entry);buildDayTabs();
-    } else {
-      selDate=entry.date;buildBtnGrid();buildDayTabs();renderEntries();updateHero();
-    }
-    updateRptBtn();
   }
-  haptic(12);
-  toast(`${entry.emoji} ${entry.label} — R$ ${fmt(entry.value)} registrado`);
 }
 
 function updateBadge(itemId){
@@ -1520,7 +1515,17 @@ function renderEntries(){
     return;
   }
   c.innerHTML=`<div class="ent-list" id="ent-list">${entries.map(e=>`<div class="eitem" id="ei-${e._fbKey||e.id}">${eHTML(e)}</div>`).join('')}</div>`;
-  div.className='eitem new';div.id=`ei-${entry.id}`;
+  document.querySelectorAll('.eitem').forEach(el=>bindSwipe(el));
+  refreshEntTotal();
+}
+
+function prependEntry(entry){
+  let list=document.getElementById('ent-list');
+  if(!list){
+    renderEntries();return;
+  }
+  const div=document.createElement('div');
+  div.className='eitem new';div.id=`ei-${entry._fbKey||entry.id}`;
   div.innerHTML=eHTML(entry);list.insertBefore(div,list.firstChild);
   bindSwipe(div);
   setTimeout(()=>div.classList.remove('new'),1800);
@@ -1549,22 +1554,21 @@ async function delEntry(key, reason=''){
   if(el){ el.classList.add('removing'); }
   haptic(8);
   setTimeout(async ()=>{
+    // Remove localmente imediatamente
+    let arr=getLocalEntries(cSeller.id).filter(e=>(e._fbKey||e.id)!==key);
+    saveLocalEntries(cSeller.id,arr);
+    renderEntries();buildDayTabs();buildBtnGrid();updateHero();updateRptBtn();
+    toast('🗑 Registro removido');
+
+    // Sincroniza remoção com Firebase em background
     if(fbMode && window._fbOK){
       try{
         const {db,ref,remove}=window._fb;
         await remove(ref(db,`acess_central/entries/${cSeller.id}/${key}`));
       } catch(e){
-        // Firebase falhou — remover localmente
-        let arr=getLocalEntries(cSeller.id).filter(e=>(e._fbKey||e.id)!==key);
-        saveLocalEntries(cSeller.id,arr);
-        renderEntries();buildDayTabs();buildBtnGrid();updateHero();updateRptBtn();
+        // Firebase falhou mas já removeu local — ok
       }
-    } else {
-      let arr=getLocalEntries(cSeller.id).filter(e=>(e._fbKey||e.id)!==key);
-      saveLocalEntries(cSeller.id,arr);
-      renderEntries();buildDayTabs();buildBtnGrid();updateHero();updateRptBtn();
     }
-    toast('🗑 Registro removido');
   },290);
 }
 
