@@ -1375,8 +1375,23 @@ async function confirmEntry(){
   _pendingEntry=null;
   document.getElementById('csheet-overlay').classList.remove('open');
   if(fbMode && window._fbOK){
-    const {db,ref,push}=window._fb;
-    await push(ref(db,`acess_central/entries/${cSeller.id}`),entry);
+    try{
+      const {db,ref,push}=window._fb;
+      await push(ref(db,`acess_central/entries/${cSeller.id}`),entry);
+    } catch(e){
+      // Firebase falhou — salvar localmente
+      const arr=getLocalEntries(cSeller.id);
+      arr.push(entry);saveLocalEntries(cSeller.id,arr);
+      if(selDate===entry.date){
+        updateBadge(entry.type);updateHero();prependEntry(entry);buildDayTabs();
+      } else {
+        selDate=entry.date;buildBtnGrid();buildDayTabs();renderEntries();updateHero();
+      }
+      updateRptBtn();
+      toast('⚠️ Sem conexão — salvo localmente');
+      haptic(12);
+      return;
+    }
   } else {
     const arr=getLocalEntries(cSeller.id);
     arr.push(entry);saveLocalEntries(cSeller.id,arr);
@@ -1535,8 +1550,15 @@ async function delEntry(key, reason=''){
   haptic(8);
   setTimeout(async ()=>{
     if(fbMode && window._fbOK){
-      const {db,ref,remove}=window._fb;
-      await remove(ref(db,`acess_central/entries/${cSeller.id}/${key}`));
+      try{
+        const {db,ref,remove}=window._fb;
+        await remove(ref(db,`acess_central/entries/${cSeller.id}/${key}`));
+      } catch(e){
+        // Firebase falhou — remover localmente
+        let arr=getLocalEntries(cSeller.id).filter(e=>(e._fbKey||e.id)!==key);
+        saveLocalEntries(cSeller.id,arr);
+        renderEntries();buildDayTabs();buildBtnGrid();updateHero();updateRptBtn();
+      }
     } else {
       let arr=getLocalEntries(cSeller.id).filter(e=>(e._fbKey||e.id)!==key);
       saveLocalEntries(cSeller.id,arr);
