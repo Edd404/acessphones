@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Avaliação de Troca — Acess Phones</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Avaliação AP">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+  const firebaseConfig = {
+    apiKey: "AIzaSyAgC4nVJmcyr-GhXoO3eKBmOfVO54l3zu4",
+    authDomain: "acessphones-2decc.firebaseapp.com",
+    databaseURL: "https://acessphones-2decc-default-rtdb.firebaseio.com",
+    projectId: "acessphones-2decc",
+    storageBucket: "acessphones-2decc.firebasestorage.app",
+    messagingSenderId: "904616824825",
+    appId: "1:904616824825:web:e1f6d31d4df063a9223728"
+  };
+  try {
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    window._fb = { db, ref, set, onValue };
+    window._fbOK = true;
+  } catch(e) { window._fbOK = false; }
+  window._fbReady = true;
+  document.dispatchEvent(new Event('fb-ready'));
+</script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#0a0a0a;--bg:#fafafa;--surface:#fff;--border:#e8e8e8;
+  --text:#0a0a0a;--soft:#a0a0a0;--muted:#5a5a5a;
+  --gold:#b8964e;--gold-l:#d4b06a;--gold-pale:#f5edd8;
+  --green:#1a6e3f;--green-pale:#e8f5ed;--red:#c0392b;--red-pale:#fbeae8;
+  --amber:#b8860b;--amber-pale:#fbf3da;
+  --r:20px;--rs:14px;--shb:0 8px 40px rgba(0,0,0,.10);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);
+  min-height:100dvh;-webkit-font-smoothing:antialiased;
+  padding-bottom:calc(78px + env(safe-area-inset-bottom));
+}
+@keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.view{animation:pageIn .28s ease both}
+
+/* ── LOADING ─────────────────────────────────────── */
+.loading{position:fixed;inset:0;z-index:9999;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.ld-dots{display:flex;gap:7px}
+.ld-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:ldP 1.4s ease infinite}
+.ld-dot:nth-child(2){animation-delay:.22s}.ld-dot:nth-child(3){animation-delay:.44s}
+@keyframes ldP{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+
+/* ── HEADER ──────────────────────────────────────── */
+.hdr{
+  position:sticky;top:0;z-index:200;
+  background:rgba(250,250,250,.93);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);padding:14px 18px 12px;
+}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hdr-info{display:flex;flex-direction:column}
+.hdr-title{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;letter-spacing:.01em}
+.hdr-sub{font-size:11px;color:var(--muted);letter-spacing:.02em}
+.hdr-acts{display:flex;gap:8px}
+.ibtn{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.ibtn:active{transform:scale(.9)}
+
+/* mode tabs */
+.mode-tabs{display:flex;gap:5px;background:var(--border);border-radius:50px;padding:3px}
+.mode-tab{flex:1;text-align:center;padding:9px 4px;border-radius:50px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);user-select:none;-webkit-tap-highlight-color:transparent}
+.mode-tab.active{background:var(--black);color:#fafafa;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+
+/* ── SYNC BAR ──────────────────────────────────────── */
+.sync-bar{padding:7px 18px;font-size:11px;text-align:center;font-weight:600;letter-spacing:.02em;transition:all .3s}
+.sync-bar.online{background:var(--green-pale);color:var(--green)}
+.sync-bar.offline{background:var(--red-pale);color:var(--red)}
+
+.wrap{padding:18px;max-width:560px;margin:0 auto}
+
+/* ── RULES CARD ──────────────────────────────────── */
+.rules-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px 18px;margin-bottom:18px;box-shadow:var(--shb);
+}
+.rules-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.rule-line{font-size:12.5px;color:var(--muted);line-height:1.7;display:flex;gap:7px;align-items:flex-start}
+.rule-line.warn{color:var(--red);font-weight:600}
+.rule-line b{color:var(--text)}
+
+/* ── SECTION LABEL ───────────────────────────────── */
+.sec-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+.sec-label:first-child{margin-top:0}
+
+/* ── SELECT GRID (modelo / capacidade) ──────────── */
+.field{margin-bottom:14px}
+.field-lbl{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px;display:block}
+.sel-wrap{position:relative}
+select.sel{
+  width:100%;appearance:none;-webkit-appearance:none;
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rs);
+  padding:14px 38px 14px 16px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--text);
+  cursor:pointer;transition:border-color .2s;
+}
+select.sel:focus{outline:none;border-color:var(--gold)}
+.sel-wrap::after{content:'▾';position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--soft);pointer-events:none;font-size:13px}
+
+/* ── BASE PRICE DISPLAY ─────────────────────────── */
+.base-card{
+  background:linear-gradient(135deg,#fff,var(--gold-pale));border:1px solid var(--gold-l);
+  border-radius:var(--r);padding:18px 20px;display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;
+}
+.base-lbl{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.base-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:var(--text)}
+
+/* ── PROBLEM CHECKLIST ──────────────────────────── */
+.prob-list{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.prob-item{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rs);
+  padding:13px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:all .2s;-webkit-tap-highlight-color:transparent;
+}
+.prob-item:active{transform:scale(.99)}
+.prob-item.checked{border-color:var(--gold);background:var(--gold-pale)}
+.prob-item.blocker{border-color:var(--red)}
+.prob-item.blocker.checked{background:var(--red-pale)}
+.prob-check{
+  width:21px;height:21px;border-radius:7px;border:1.5px solid var(--border);background:#fff;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;
+  transition:all .2s;
+}
+.prob-item.checked .prob-check{background:var(--gold);border-color:var(--gold)}
+.prob-item.blocker.checked .prob-check{background:var(--red);border-color:var(--red)}
+.prob-item.checked .prob-check::after{content:'✓'}
+.prob-body{flex:1;min-width:0}
+.prob-name{font-size:14px;font-weight:600;line-height:1.3}
+.prob-name .ico{margin-right:5px}
+.prob-deduct{font-size:12px;color:var(--muted);margin-top:1px}
+.prob-deduct b{color:var(--red);font-weight:700}
+.prob-item.blocker .prob-deduct b{color:var(--red)}
+
+/* ── RESULT CARD ─────────────────────────────────── */
+.result-card{
+  background:var(--black);border-radius:var(--r);padding:22px 20px;color:#fff;
+  position:sticky;bottom:calc(78px + env(safe-area-inset-bottom) + 10px);
+  box-shadow:0 12px 36px rgba(0,0,0,.25);margin-top:6px;
+}
+.result-card.blocked{background:linear-gradient(135deg,#3a1410,#1a0a08)}
+.result-row{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:rgba(255,255,255,.55);padding:3px 0}
+.result-row b{color:rgba(255,255,255,.85);font-weight:600}
+.result-row.deduct b{color:#ff8a7a}
+.result-div{height:1px;background:rgba(255,255,255,.12);margin:10px 0}
+.result-final{display:flex;justify-content:space-between;align-items:center}
+.result-final-lbl{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.result-final-val{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:var(--gold-l)}
+.result-blocked-msg{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#ff9d8f}
+.result-actions{display:flex;gap:8px;margin-top:14px}
+.result-btn{flex:1;border:none;border-radius:12px;padding:12px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.result-btn:active{transform:scale(.96)}
+.result-btn.primary{background:var(--gold);color:#000}
+.result-btn.ghost{background:rgba(255,255,255,.1);color:#fff}
+
+/* ── EMPTY STATE ─────────────────────────────────── */
+.empty-hint{text-align:center;padding:40px 20px;color:var(--soft)}
+.empty-hint .ico{font-size:32px;margin-bottom:10px;display:block}
+.empty-hint p{font-size:13px;line-height:1.6}
+
+/* ── CONSULT TABLE (modo tabela) ─────────────────── */
+.cat-block{margin-bottom:24px}
+.cat-block-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.tbl-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:10px;font-size:13.5px}
+.tbl-row:nth-child(odd){background:#f5f5f5}
+.tbl-row-name{font-weight:600;color:var(--text)}
+.tbl-row-cap{font-size:11px;color:var(--soft);font-weight:500}
+.tbl-row-val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--gold)}
+.tbl-row-val.deduct{color:var(--red)}
+
+/* ── EDIT (admin) ─────────────────────────────────── */
+.edit-row{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;
+}
+.edit-row-lbl{font-size:13px;font-weight:600;flex:1;min-width:0}
+.edit-row-cap{font-size:10.5px;color:var(--soft);display:block;font-weight:500}
+.edit-input{
+  width:96px;text-align:right;border:1.5px solid var(--border);border-radius:9px;
+  padding:9px 10px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;color:var(--text);
+}
+.edit-input:focus{outline:none;border-color:var(--gold)}
+.edit-input.empty-val{border-color:var(--amber);background:var(--amber-pale)}
+.edit-save-bar{
+  position:sticky;bottom:calc(78px + env(safe-area-inset-bottom) + 10px);
+  background:var(--black);border-radius:16px;padding:14px;margin-top:16px;
+  display:flex;gap:10px;box-shadow:0 12px 36px rgba(0,0,0,.25);
+}
+.edit-save-btn{flex:1;border:none;border-radius:10px;padding:13px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.edit-save-btn.primary{background:var(--gold);color:#000}
+.edit-save-btn.ghost{background:rgba(255,255,255,.12);color:#fff}
+
+/* ── PW MODAL ─────────────────────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:300;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.open{opacity:1;pointer-events:all}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:301;background:var(--surface);border-radius:24px 24px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);max-width:560px;margin:0 auto}
+.sheet.open{transform:translateY(0)}
+.sheet-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:14px}
+.pw-field{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'Outfit',sans-serif;font-size:16px;margin-bottom:14px;letter-spacing:.15em}
+.pw-field:focus{outline:none;border-color:var(--gold)}
+.pw-actions{display:flex;gap:10px}
+.pw-cancel{flex:1;background:var(--border);color:var(--text);border:none;border-radius:12px;padding:14px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer}
+.pw-enter{flex:2;background:var(--black);color:#fafafa;border:none;border-radius:12px;padding:14px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.pw-enter:active,.pw-cancel:active{transform:scale(.96)}
+.pw-err{color:var(--red);font-size:12px;margin:-8px 0 12px;display:none}
+
+/* ── TOAST ─────────────────────────────────────────── */
+.toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--black);color:#fff;padding:12px 22px;border-radius:50px;font-size:13px;font-weight:600;z-index:999;opacity:0;pointer-events:none;transition:all .3s;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── BOTTOM NAV ───────────────────────────────────── */
+.bnav{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(250,250,250,.93);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-top:1px solid var(--border);
+  display:flex;overflow-x:auto;scrollbar-width:none;
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom));
+}
+.bnav::-webkit-scrollbar{display:none}
+.bni{flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:3px 0;text-decoration:none}
+.bni:active{opacity:.6}
+.bni-ico{font-size:18px;transition:transform .2s}
+.bni-lbl{font-size:9px;font-weight:600;letter-spacing:.03em;color:var(--soft);white-space:nowrap}
+.bni.active .bni-lbl{color:var(--black)}
+.bni.active .bni-ico{transform:scale(1.15)}
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading">
+  <div class="ld-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div>
+</div>
+
+<!-- SYNC BAR -->
+<div class="sync-bar" id="sync-bar" style="display:none"></div>
+
+<!-- HEADER -->
+<header class="hdr" id="main-hdr" style="display:none">
+  <div class="hdr-top">
+    <div class="hdr-info">
+      <div class="hdr-title">Avaliação de Troca</div>
+      <div class="hdr-sub">Quanto pagar no aparelho usado</div>
+    </div>
+    <div class="hdr-acts">
+      <button class="ibtn" onclick="openPwModal()" title="Editar valores">🔐</button>
+    </div>
+  </div>
+  <div class="mode-tabs">
+    <div class="mode-tab active" id="tab-calc" onclick="setMode('calc')">🧮 Avaliar</div>
+    <div class="mode-tab" id="tab-table" onclick="setMode('table')">📋 Tabela</div>
+  </div>
+</header>
+
+<div class="wrap" id="main-wrap" style="display:none">
+
+  <!-- ══ MODO AVALIAR ══ -->
+  <div id="view-calc" class="view">
+
+    <div class="rules-card">
+      <div class="rules-title">📌 Regras rápidas</div>
+      <div class="rule-line"><span>✅</span><span>Funcionando tudo, sem muitas marcas de uso → <b>valor cheio</b></span></div>
+      <div class="rule-line"><span>✅</span><span>Bateria abaixo de 85% → <b>desconta valor da troca</b></span></div>
+      <div class="rule-line"><span>✅</span><span>Tela falsa → <b>desconta valor da troca de tela</b></span></div>
+      <div class="rule-line warn"><span>⚠️</span><span>Problema de placa → <b>NÃO PEGAR</b></span></div>
+      <div class="rule-line warn"><span>⚠️</span><span>Mensagem de tela → <b>NÃO PEGAR</b></span></div>
+    </div>
+
+    <div class="field">
+      <label class="field-lbl">Modelo</label>
+      <div class="sel-wrap">
+        <select class="sel" id="sel-model" onchange="onModelChange()"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-lbl">Armazenamento</label>
+      <div class="sel-wrap">
+        <select class="sel" id="sel-cap" onchange="onCapChange()"></select>
+      </div>
+    </div>
+
+    <div id="calc-body" style="display:none">
+      <div class="base-card">
+        <div>
+          <div class="base-lbl">Valor base de compra</div>
+        </div>
+        <div class="base-val" id="base-price-val">R$ 0</div>
+      </div>
+
+      <div class="sec-label">⚠️ Bloqueios (não compramos)</div>
+      <div class="prob-list" id="blocker-list"></div>
+
+      <div class="sec-label">🔧 Reparos a descontar</div>
+      <div class="prob-list" id="repair-list"></div>
+
+      <div class="sec-label">🧾 Outros</div>
+      <div class="prob-list" id="other-list"></div>
+
+      <div class="result-card" id="result-card">
+        <div id="result-breakdown"></div>
+        <div class="result-div"></div>
+        <div class="result-final" id="result-final">
+          <div class="result-final-lbl">Pagar ao cliente</div>
+          <div class="result-final-val" id="result-final-val">R$ 0</div>
+        </div>
+        <div class="result-blocked-msg" id="result-blocked-msg" style="display:none">
+          🚫 Aparelho não pode ser comprado — veja motivo acima
+        </div>
+        <div class="result-actions">
+          <button class="result-btn ghost" onclick="resetCalc()">↺ Limpar</button>
+          <button class="result-btn primary" onclick="shareResult()">📤 Compartilhar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-hint" id="empty-hint">
+      <span class="ico">📱</span>
+      <p>Selecione o modelo e o armazenamento do<br>aparelho do cliente para começar a avaliação.</p>
+    </div>
+  </div>
+
+  <!-- ══ MODO TABELA ══ -->
+  <div id="view-table" class="view" style="display:none">
+    <div class="cat-block">
+      <div class="cat-block-title">💰 Valores de compra</div>
+      <div id="tbl-buy"></div>
+    </div>
+    <div class="cat-block">
+      <div class="cat-block-title">🔋 Bateria</div>
+      <div id="tbl-bateria"></div>
+    </div>
+    <div class="cat-block">
+      <div class="cat-block-title">📱 Tela</div>
+      <div id="tbl-tela"></div>
+    </div>
+    <div class="cat-block">
+      <div class="cat-block-title">🔲 Traseira trincada</div>
+      <div id="tbl-traseira"></div>
+    </div>
+    <div class="cat-block">
+      <div class="cat-block-title">🔌 Dock ruim</div>
+      <div id="tbl-dock"></div>
+    </div>
+    <div class="cat-block">
+      <div class="cat-block-title">📷 Câmera traseira</div>
+      <div id="tbl-camera"></div>
+    </div>
+    <div class="cat-block">
+      <div class="cat-block-title">🧾 Outros</div>
+      <div id="tbl-outros"></div>
+    </div>
+  </div>
+
+  <!-- ══ MODO EDITAR (admin) ══ -->
+  <div id="view-edit" class="view" style="display:none">
+    <div class="rules-card">
+      <div class="rules-title">🔐 Editar valores</div>
+      <div class="rule-line">Altere os preços abaixo e toque em <b>Salvar alterações</b>. Os valores em laranja estão em branco e precisam ser preenchidos.</div>
+    </div>
+
+    <div class="sec-label">💰 Valores de compra</div>
+    <div id="edit-buy"></div>
+
+    <div class="sec-label">🔋 Bateria</div>
+    <div id="edit-bateria"></div>
+
+    <div class="sec-label">📱 Tela</div>
+    <div id="edit-tela"></div>
+
+    <div class="sec-label">🔲 Traseira trincada</div>
+    <div id="edit-traseira"></div>
+
+    <div class="sec-label">🔌 Dock ruim</div>
+    <div id="edit-dock"></div>
+
+    <div class="sec-label">📷 Câmera traseira</div>
+    <div id="edit-camera"></div>
+
+    <div class="sec-label">🧾 Outros</div>
+    <div id="edit-outros"></div>
+
+    <div class="edit-save-bar">
+      <button class="edit-save-btn ghost" onclick="cancelEdit()">Cancelar</button>
+      <button class="edit-save-btn primary" onclick="saveEdits()">Salvar alterações</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- PW MODAL -->
+<div class="overlay" id="pw-overlay" onclick="closePwModal()"></div>
+<div class="sheet" id="pw-sheet">
+  <div class="sheet-title">Acesso restrito</div>
+  <input class="pw-field" id="pw-field" type="password" maxlength="30" placeholder="••••••" inputmode="numeric">
+  <div class="pw-err" id="pw-err">Senha incorreta.</div>
+  <div class="pw-actions">
+    <button class="pw-cancel" onclick="closePwModal()">Cancelar</button>
+    <button class="pw-enter" onclick="pwEnter()">Entrar →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav" id="bnav" style="display:none">
+  <a class="bni" href="index.html" style="text-decoration:none"><span class="bni-ico">📋</span><span class="bni-lbl">Central</span></a>
+  <a class="bni" href="calculadora.html" style="text-decoration:none"><span class="bni-ico">🧮</span><span class="bni-lbl">Calc</span></a>
+  <a class="bni" href="agenda.html" style="text-decoration:none"><span class="bni-ico">📅</span><span class="bni-lbl">Agenda</span></a>
+  <a class="bni" href="tabela.html" style="text-decoration:none"><span class="bni-ico">💰</span><span class="bni-lbl">Tabela</span></a>
+  <div class="bni active"><span class="bni-ico">🔁</span><span class="bni-lbl">Avaliação</span></div>
+  <a class="bni" href="frases.html" style="text-decoration:none"><span class="bni-ico">⚡</span><span class="bni-lbl">Arsenal</span></a>
+</nav>
+
+<script>
+const MGR_PASS = '1234'; // ← mesma senha do gestor usada no app
+
+// ── DADOS PADRÃO (usados na primeira vez, antes de sincronizar) ──
+const DEFAULT_DATA = {
+  buy: [
+    {fam:"iPhone 11", cap:"64GB", price:600},
+    {fam:"iPhone 11", cap:"128GB", price:700},
+    {fam:"iPhone 11 Pro", cap:"64GB", price:800},
+    {fam:"iPhone 11 Pro", cap:"256GB", price:900},
+    {fam:"iPhone 11 Pro Max", cap:"64GB", price:900},
+    {fam:"iPhone 11 Pro Max", cap:"256GB", price:1100},
+    {fam:"iPhone 12", cap:"64GB", price:800},
+    {fam:"iPhone 12", cap:"128GB", price:1000},
+    {fam:"iPhone 12 Pro", cap:"128GB", price:1400},
+    {fam:"iPhone 12 Pro", cap:"256GB", price:1500},
+    {fam:"iPhone 12 Pro Max", cap:"128GB", price:1700},
+    {fam:"iPhone 12 Pro Max", cap:"256GB", price:1900},
+    {fam:"iPhone 13", cap:"128GB", price:1500},
+    {fam:"iPhone 13", cap:"256GB", price:1600},
+    {fam:"iPhone 13 Pro", cap:"128GB", price:1900},
+    {fam:"iPhone 13 Pro", cap:"256GB", price:2100},
+    {fam:"iPhone 13 Pro Max", cap:"128GB", price:2300},
+    {fam:"iPhone 13 Pro Max", cap:"256GB", price:2500},
+    {fam:"iPhone 14", cap:"128GB", price:1700},
+    {fam:"iPhone 14 Plus", cap:"128GB", price:1900},
+    {fam:"iPhone 14 Pro", cap:"128GB", price:2300},
+    {fam:"iPhone 14 Pro", cap:"256GB", price:2500},
+    {fam:"iPhone 14 Pro Max", cap:"128GB", price:2900},
+    {fam:"iPhone 14 Pro Max", cap:"256GB", price:3000},
+    {fam:"iPhone 15", cap:"128GB", price:2500},
+    {fam:"iPhone 15", cap:"256GB", price:2700},
+    {fam:"iPhone 15 Plus", cap:"128GB", price:2500},
+    {fam:"iPhone 15 Pro", cap:"128GB", price:3200},
+    {fam:"iPhone 15 Pro", cap:"256GB", price:3400},
+    {fam:"iPhone 15 Pro Max", cap:"256GB", price:3800},
+    {fam:"iPhone 16", cap:"128GB", price:3400},
+    {fam:"iPhone 16 Plus", cap:"128GB", price:3600},
+    {fam:"iPhone 16 Pro", cap:"128GB", price:4200},
+    {fam:"iPhone 16 Pro", cap:"256GB", price:4400},
+    {fam:"iPhone 16 Pro Max", cap:"256GB", price:5000},
+    {fam:"iPhone 17", cap:"256GB", price:4500},
+    {fam:"iPhone 17 Pro", cap:"256GB", price:6300},
+    {fam:"iPhone 17 Pro Max", cap:"256GB", price:7000},
+  ],
+  // grupos de modelo -> valor, usados nas categorias de reparo
+  bateria: [
+    {grp:"iPhone 11 / 11 Pro / 11 Pro Max", models:["iPhone 11","iPhone 11 Pro","iPhone 11 Pro Max"], price:150},
+    {grp:"iPhone 12 / 12 Pro / 12 Pro Max", models:["iPhone 12","iPhone 12 Pro","iPhone 12 Pro Max"], price:150},
+    {grp:"iPhone 13", models:["iPhone 13"], price:150},
+    {grp:"iPhone 13 Pro / 13 Pro Max", models:["iPhone 13 Pro","iPhone 13 Pro Max"], price:200},
+    {grp:"iPhone 14 / 14 Pro / 14 Pro Max", models:["iPhone 14","iPhone 14 Pro","iPhone 14 Pro Max"], price:250},
+    {grp:"iPhone 14 Plus", models:["iPhone 14 Plus"], price:null},
+    {grp:"iPhone 15 / 15 Pro / 15 Pro Max", models:["iPhone 15","iPhone 15 Pro","iPhone 15 Pro Max"], price:250},
+    {grp:"iPhone 15 Plus", models:["iPhone 15 Plus"], price:null},
+    {grp:"iPhone 16 / 16 Pro / 16 Pro Max", models:["iPhone 16","iPhone 16 Pro","iPhone 16 Pro Max"], price:300},
+    {grp:"iPhone 16 Plus", models:["iPhone 16 Plus"], price:null},
+    {grp:"iPhone 17 / 17 Pro / 17 Pro Max", models:["iPhone 17","iPhone 17 Pro","iPhone 17 Pro Max"], price:null},
+  ],
+  tela: [
+    {grp:"iPhone 11", models:["iPhone 11"], price:250},
+    {grp:"iPhone 11 Pro", models:["iPhone 11 Pro"], price:400},
+    {grp:"iPhone 11 Pro Max", models:["iPhone 11 Pro Max"], price:500},
+    {grp:"iPhone 12 / 12 Pro", models:["iPhone 12","iPhone 12 Pro"], price:450},
+    {grp:"iPhone 12 Pro Max", models:["iPhone 12 Pro Max"], price:700},
+    {grp:"iPhone 13", models:["iPhone 13"], price:450},
+    {grp:"iPhone 13 Pro", models:["iPhone 13 Pro"], price:800},
+    {grp:"iPhone 13 Pro Max", models:["iPhone 13 Pro Max"], price:950},
+    {grp:"iPhone 14", models:["iPhone 14"], price:450},
+    {grp:"iPhone 14 Plus", models:["iPhone 14 Plus"], price:null},
+    {grp:"iPhone 14 Pro", models:["iPhone 14 Pro"], price:1000},
+    {grp:"iPhone 14 Pro Max", models:["iPhone 14 Pro Max"], price:1300},
+    {grp:"iPhone 15", models:["iPhone 15"], price:800},
+    {grp:"iPhone 15 Plus", models:["iPhone 15 Plus"], price:null},
+    {grp:"iPhone 15 Pro", models:["iPhone 15 Pro"], price:1300},
+    {grp:"iPhone 15 Pro Max", models:["iPhone 15 Pro Max"], price:1500},
+    {grp:"iPhone 16", models:["iPhone 16"], price:900},
+    {grp:"iPhone 16 Plus", models:["iPhone 16 Plus"], price:null},
+    {grp:"iPhone 16 Pro", models:["iPhone 16 Pro"], price:1500},
+    {grp:"iPhone 16 Pro Max", models:["iPhone 16 Pro Max"], price:1800},
+    {grp:"iPhone 17 / 17 Pro / 17 Pro Max", models:["iPhone 17","iPhone 17 Pro","iPhone 17 Pro Max"], price:null},
+  ],
+  traseira: [
+    {grp:"iPhone 11 / 11 Pro / 11 Pro Max", models:["iPhone 11","iPhone 11 Pro","iPhone 11 Pro Max"], price:200},
+    {grp:"iPhone 12 / 12 Pro", models:["iPhone 12","iPhone 12 Pro"], price:200},
+    {grp:"iPhone 12 Pro Max / 13", models:["iPhone 12 Pro Max","iPhone 13"], price:250},
+    {grp:"iPhone 13 Pro / 13 Pro Max", models:["iPhone 13 Pro","iPhone 13 Pro Max"], price:250},
+    {grp:"iPhone 14 / 14 Pro / 14 Pro Max", models:["iPhone 14","iPhone 14 Pro","iPhone 14 Pro Max"], price:300},
+    {grp:"iPhone 14 Plus", models:["iPhone 14 Plus"], price:null},
+    {grp:"iPhone 15 / 15 Pro / 15 Pro Max", models:["iPhone 15","iPhone 15 Pro","iPhone 15 Pro Max"], price:300},
+    {grp:"iPhone 15 Plus", models:["iPhone 15 Plus"], price:null},
+    {grp:"iPhone 16 / 16 Pro / 16 Pro Max", models:["iPhone 16","iPhone 16 Pro","iPhone 16 Pro Max"], price:350},
+    {grp:"iPhone 16 Plus", models:["iPhone 16 Plus"], price:null},
+    {grp:"iPhone 17 / 17 Pro / 17 Pro Max", models:["iPhone 17","iPhone 17 Pro","iPhone 17 Pro Max"], price:null},
+  ],
+  dock: [
+    {grp:"iPhone 11", models:["iPhone 11"], price:150},
+    {grp:"iPhone 11 Pro / 11 Pro Max", models:["iPhone 11 Pro","iPhone 11 Pro Max"], price:200},
+    {grp:"iPhone 12 / 12 Pro / 12 Pro Max", models:["iPhone 12","iPhone 12 Pro","iPhone 12 Pro Max"], price:200},
+    {grp:"iPhone 13 / 13 Pro / 13 Pro Max", models:["iPhone 13","iPhone 13 Pro","iPhone 13 Pro Max"], price:250},
+    {grp:"iPhone 14 / 14 Pro / 14 Pro Max", models:["iPhone 14","iPhone 14 Pro","iPhone 14 Pro Max"], price:300},
+    {grp:"iPhone 14 Plus", models:["iPhone 14 Plus"], price:null},
+    {grp:"iPhone 15 / 15 Pro / 15 Pro Max", models:["iPhone 15","iPhone 15 Pro","iPhone 15 Pro Max"], price:350},
+    {grp:"iPhone 15 Plus", models:["iPhone 15 Plus"], price:null},
+    {grp:"iPhone 16 / 16 Pro / 16 Pro Max", models:["iPhone 16","iPhone 16 Pro","iPhone 16 Pro Max"], price:400},
+    {grp:"iPhone 16 Plus", models:["iPhone 16 Plus"], price:null},
+    {grp:"iPhone 17 / 17 Pro / 17 Pro Max", models:["iPhone 17","iPhone 17 Pro","iPhone 17 Pro Max"], price:null},
+  ],
+  camera: [
+    {grp:"iPhone 11", models:["iPhone 11"], price:150},
+    {grp:"iPhone 11 Pro / 11 Pro Max", models:["iPhone 11 Pro","iPhone 11 Pro Max"], price:300},
+    {grp:"iPhone 12", models:["iPhone 12"], price:200},
+    {grp:"iPhone 12 Pro / 12 Pro Max", models:["iPhone 12 Pro","iPhone 12 Pro Max"], price:400},
+    {grp:"iPhone 13", models:["iPhone 13"], price:200},
+    {grp:"iPhone 13 Pro / 13 Pro Max", models:["iPhone 13 Pro","iPhone 13 Pro Max"], price:400},
+    {grp:"iPhone 14", models:["iPhone 14"], price:250},
+    {grp:"iPhone 14 Plus", models:["iPhone 14 Plus"], price:null},
+    {grp:"iPhone 14 Pro / 14 Pro Max", models:["iPhone 14 Pro","iPhone 14 Pro Max"], price:300},
+    {grp:"iPhone 15 / 15 Pro / 15 Pro Max", models:["iPhone 15","iPhone 15 Pro","iPhone 15 Pro Max"], price:400},
+    {grp:"iPhone 15 Plus", models:["iPhone 15 Plus"], price:null},
+    {grp:"iPhone 16 / 16 Pro / 16 Pro Max", models:["iPhone 16","iPhone 16 Pro","iPhone 16 Pro Max"], price:500},
+    {grp:"iPhone 16 Plus", models:["iPhone 16 Plus"], price:null},
+    {grp:"iPhone 17 / 17 Pro / 17 Pro Max", models:["iPhone 17","iPhone 17 Pro","iPhone 17 Pro Max"], price:null},
+  ],
+  outros: [
+    {grp:"Detalhes na carcaça", models:["__ALL__"], price:100},
+  ]
+};
+
+let DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+let EDIT_DATA = null;
+let _fbMode = false;
+let _pendingAction = null; // 'edit'
+let SELECTED = { model:null, cap:null, checks:{} };
+
+const $ = id => document.getElementById(id);
+const BRL = v => 'R$ ' + (v||0).toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0});
+
+function toast(msg, dur=2200){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('show'), dur);
+}
+function haptic(p=[15]){ try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} }
+
+// ── PERSISTÊNCIA ──────────────────────────────────────────────────
+const LS_KEY = 'acess_avaliacao_data';
+
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) DATA = JSON.parse(raw);
+  }catch(e){}
+}
+function saveLocal(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(DATA)); }catch(e){}
+}
+
+function setSyncBar(state, msg){
+  const sb = $('sync-bar');
+  sb.style.display = 'block';
+  sb.className = 'sync-bar ' + state;
+  sb.textContent = msg;
+  if(state==='online'){ clearTimeout(sb._t); sb._t = setTimeout(()=>sb.style.display='none', 2500); }
+}
+
+function initFirebase(){
+  if(!window._fbOK || !window._fb){ loadLocal(); buildAll(); return; }
+  _fbMode = true;
+  setSyncBar('online', '🟢 Em tempo real — sincronizado');
+  const { onValue, ref, db } = window._fb;
+  onValue(ref(db, 'acess_avaliacao/data'), snap => {
+    const v = snap.val();
+    if(v){ DATA = v; saveLocal(); }
+    else { saveToFb(); }
+    buildAll();
+  });
+}
+function saveToFb(){
+  if(!_fbMode){ saveLocal(); return; }
+  const { set, ref, db } = window._fb;
+  set(ref(db, 'acess_avaliacao/data'), DATA).catch(()=>{});
+  saveLocal();
+}
+
+window.addEventListener('online', ()=>{ if(_fbMode) setSyncBar('online','🟢 Em tempo real — sincronizado'); });
+window.addEventListener('offline', ()=>{ setSyncBar('offline','🔴 Sem conexão — dados salvos localmente'); });
+
+// ── MODE TABS ─────────────────────────────────────────────────────
+function setMode(mode){
+  haptic();
+  $('tab-calc').classList.toggle('active', mode==='calc');
+  $('tab-table').classList.toggle('active', mode==='table');
+  $('view-calc').style.display = mode==='calc' ? 'block' : 'none';
+  $('view-table').style.display = mode==='table' ? 'block' : 'none';
+  $('view-edit').style.display = 'none';
+}
+
+// ── MONTAGEM: SELECT DE MODELOS ─────────────────────────────────
+function familyList(){
+  // ordem original da tabela de compra, sem repetir família
+  const seen = new Set(); const list = [];
+  DATA.buy.forEach(b => { if(!seen.has(b.fam)){ seen.add(b.fam); list.push(b.fam); } });
+  return list;
+}
+function capsForFamily(fam){
+  return DATA.buy.filter(b => b.fam===fam);
+}
+
+function populateModelSelect(){
+  const sel = $('sel-model');
+  sel.innerHTML = '<option value="">Selecione…</option>' +
+    familyList().map(f => `<option value="${f}">${f}</option>`).join('');
+}
+function onModelChange(){
+  haptic();
+  const fam = $('sel-model').value;
+  SELECTED.model = fam || null;
+  SELECTED.cap = null;
+  const capSel = $('sel-cap');
+  if(!fam){ capSel.innerHTML = '<option value="">—</option>'; $('calc-body').style.display='none'; $('empty-hint').style.display='block'; return; }
+  const caps = capsForFamily(fam);
+  capSel.innerHTML = '<option value="">Selecione…</option>' + caps.map(c => `<option value="${c.cap}">${c.cap} — ${BRL(c.price)}</option>`).join('');
+  $('calc-body').style.display='none'; $('empty-hint').style.display='block';
+}
+function onCapChange(){
+  haptic();
+  SELECTED.cap = $('sel-cap').value || null;
+  if(!SELECTED.cap){ $('calc-body').style.display='none'; $('empty-hint').style.display='block'; return; }
+  SELECTED.checks = {};
+  $('empty-hint').style.display='none';
+  $('calc-body').style.display='block';
+  renderCalcBody();
+}
+
+function getBasePrice(){
+  const row = DATA.buy.find(b => b.fam===SELECTED.model && b.cap===SELECTED.cap);
+  return row ? row.price : 0;
+}
+function findGroupValue(category, fam){
+  const list = DATA[category] || [];
+  const row = list.find(g => g.models.includes(fam) || g.models.includes('__ALL__'));
+  return row ? row.price : null;
+}
+
+function renderCalcBody(){
+  $('base-price-val').textContent = BRL(getBasePrice());
+
+  const blockers = [
+    {id:'placa', label:'Problema de placa', icon:'⚠️'},
+    {id:'msgtela', label:'Mensagem de tela', icon:'⚠️'},
+  ];
+  $('blocker-list').innerHTML = blockers.map(b => probItemHTML(b.id, b.icon, b.label, 'Aparelho não é comprado', true)).join('');
+
+  const repairs = [];
+  const bat = findGroupValue('bateria', SELECTED.model);
+  repairs.push({id:'bateria', icon:'🔋', label:'Bateria abaixo de 85%', value:bat});
+  const tela = findGroupValue('tela', SELECTED.model);
+  repairs.push({id:'tela_quebrada', icon:'📱', label:'Tela quebrada / com defeito', value:tela});
+  repairs.push({id:'tela_falsa', icon:'🧩', label:'Tela falsa (não original)', value:tela});
+  const tras = findGroupValue('traseira', SELECTED.model);
+  repairs.push({id:'traseira', icon:'🔲', label:'Traseira trincada', value:tras});
+  const dock = findGroupValue('dock', SELECTED.model);
+  repairs.push({id:'dock', icon:'🔌', label:'Dock ruim (dificuldade p/ carregar)', value:dock});
+  const cam = findGroupValue('camera', SELECTED.model);
+  repairs.push({id:'camera', icon:'📷', label:'Câmera traseira com defeito', value:cam});
+
+  $('repair-list').innerHTML = repairs.map(r => probItemHTML(r.id, r.icon, r.label, r.value==null ? 'Valor não cadastrado' : ('Desconta ' + BRL(r.value)), false, r.value==null)).join('');
+
+  const outros = findGroupValue('outros', SELECTED.model);
+  $('other-list').innerHTML = probItemHTML('carcaca', '🧾', 'Detalhes na carcaça', outros==null ? 'Valor não cadastrado' : ('Desconta ' + BRL(outros)), false, outros==null);
+
+  attachProbHandlers();
+  renderResult();
+}
+
+function probItemHTML(id, icon, label, deductLabel, isBlocker, disabled){
+  return `<div class="prob-item${isBlocker?' blocker':''}${disabled?' disabled':''}" data-id="${id}" style="${disabled?'opacity:.5;pointer-events:none':''}">
+    <div class="prob-check"></div>
+    <div class="prob-body">
+      <div class="prob-name"><span class="ico">${icon}</span>${label}</div>
+      <div class="prob-deduct"><b>${deductLabel}</b></div>
+    </div>
+  </div>`;
+}
+function attachProbHandlers(){
+  document.querySelectorAll('.prob-item[data-id]').forEach(el => {
+    el.onclick = () => {
+      const id = el.dataset.id;
+      haptic();
+      SELECTED.checks[id] = !SELECTED.checks[id];
+      el.classList.toggle('checked', !!SELECTED.checks[id]);
+      renderResult();
+    };
+  });
+}
+
+function renderResult(){
+  const base = getBasePrice();
+  const blocked = SELECTED.checks['placa'] || SELECTED.checks['msgtela'];
+  const card = $('result-card');
+  card.classList.toggle('blocked', !!blocked);
+
+  let lines = [];
+  let total = base;
+
+  const repairMap = {
+    bateria: ['🔋 Bateria', findGroupValue('bateria', SELECTED.model)],
+    tela_quebrada: ['📱 Tela quebrada', findGroupValue('tela', SELECTED.model)],
+    tela_falsa: ['🧩 Tela falsa', findGroupValue('tela', SELECTED.model)],
+    traseira: ['🔲 Traseira trincada', findGroupValue('traseira', SELECTED.model)],
+    dock: ['🔌 Dock ruim', findGroupValue('dock', SELECTED.model)],
+    camera: ['📷 Câmera traseira', findGroupValue('camera', SELECTED.model)],
+    carcaca: ['🧾 Detalhes na carcaça', findGroupValue('outros', SELECTED.model)],
+  };
+
+  lines.push(`<div class="result-row"><span>Valor base</span><b>${BRL(base)}</b></div>`);
+
+  Object.keys(repairMap).forEach(id => {
+    if(SELECTED.checks[id]){
+      const [label, val] = repairMap[id];
+      const v = val || 0;
+      total -= v;
+      lines.push(`<div class="result-row deduct"><span>${label}</span><b>− ${BRL(v)}</b></div>`);
+    }
+  });
+
+  $('result-breakdown').innerHTML = lines.join('');
+
+  if(blocked){
+    $('result-final').style.display = 'none';
+    $('result-blocked-msg').style.display = 'flex';
+  } else {
+    $('result-final').style.display = 'flex';
+    $('result-blocked-msg').style.display = 'none';
+    $('result-final-val').textContent = BRL(Math.max(0,total));
+  }
+}
+
+function resetCalc(){
+  haptic();
+  SELECTED.checks = {};
+  document.querySelectorAll('.prob-item').forEach(el => el.classList.remove('checked'));
+  renderResult();
+}
+
+function shareResult(){
+  haptic();
+  const base = getBasePrice();
+  const blocked = SELECTED.checks['placa'] || SELECTED.checks['msgtela'];
+  let msg = `📲 *Avaliação — ${SELECTED.model} ${SELECTED.cap}*\n\n`;
+  if(blocked){
+    msg += `🚫 Aparelho não pode ser comprado (problema de placa ou mensagem de tela).`;
+  } else {
+    msg += `Valor base: ${BRL(base)}\n`;
+    const repairMap = {
+      bateria: ['Bateria abaixo de 85%', findGroupValue('bateria', SELECTED.model)],
+      tela_quebrada: ['Tela quebrada', findGroupValue('tela', SELECTED.model)],
+      tela_falsa: ['Tela falsa', findGroupValue('tela', SELECTED.model)],
+      traseira: ['Traseira trincada', findGroupValue('traseira', SELECTED.model)],
+      dock: ['Dock ruim', findGroupValue('dock', SELECTED.model)],
+      camera: ['Câmera traseira', findGroupValue('camera', SELECTED.model)],
+      carcaca: ['Detalhes na carcaça', findGroupValue('outros', SELECTED.model)],
+    };
+    let total = base;
+    Object.keys(repairMap).forEach(id => {
+      if(SELECTED.checks[id]){
+        const [label, val] = repairMap[id];
+        total -= (val||0);
+        msg += `− ${label}: ${BRL(val||0)}\n`;
+      }
+    });
+    msg += `\n*Total a pagar: ${BRL(Math.max(0,total))}*`;
+  }
+  const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
+}
+
+// ── TABELA DE CONSULTA ───────────────────────────────────────────
+function buildConsultTable(){
+  $('tbl-buy').innerHTML = DATA.buy.map(b => `
+    <div class="tbl-row">
+      <div><span class="tbl-row-name">${b.fam}</span> <span class="tbl-row-cap">${b.cap}</span></div>
+      <div class="tbl-row-val">${BRL(b.price)}</div>
+    </div>`).join('');
+
+  ['bateria','tela','traseira','dock','camera'].forEach(cat => {
+    $('tbl-' + cat).innerHTML = DATA[cat].map(g => `
+      <div class="tbl-row">
+        <div class="tbl-row-name">${g.grp}</div>
+        <div class="tbl-row-val deduct">${g.price==null ? '—' : BRL(g.price)}</div>
+      </div>`).join('');
+  });
+
+  $('tbl-outros').innerHTML = DATA.outros.map(g => `
+    <div class="tbl-row">
+      <div class="tbl-row-name">${g.grp}</div>
+      <div class="tbl-row-val deduct">${g.price==null ? '—' : BRL(g.price)}</div>
+    </div>`).join('');
+}
+
+// ── EDIÇÃO (ADMIN) ───────────────────────────────────────────────
+function openEditMode(){
+  EDIT_DATA = JSON.parse(JSON.stringify(DATA));
+  $('view-calc').style.display = 'none';
+  $('view-table').style.display = 'none';
+  $('view-edit').style.display = 'block';
+  buildEditForm();
+}
+function cancelEdit(){
+  haptic();
+  EDIT_DATA = null;
+  $('view-edit').style.display = 'none';
+  setMode('calc');
+}
+function buildEditForm(){
+  $('edit-buy').innerHTML = EDIT_DATA.buy.map((b,i) => `
+    <div class="edit-row">
+      <div class="edit-row-lbl">${b.fam}<span class="edit-row-cap">${b.cap}</span></div>
+      <input class="edit-input" type="number" inputmode="numeric" value="${b.price}" onchange="updateEditVal('buy',${i},this.value)">
+    </div>`).join('');
+
+  ['bateria','tela','traseira','dock','camera'].forEach(cat => {
+    $('edit-' + cat).innerHTML = EDIT_DATA[cat].map((g,i) => `
+      <div class="edit-row">
+        <div class="edit-row-lbl">${g.grp}</div>
+        <input class="edit-input${g.price==null?' empty-val':''}" type="number" inputmode="numeric" placeholder="—" value="${g.price==null?'':g.price}" onchange="updateEditVal('${cat}',${i},this.value)">
+      </div>`).join('');
+  });
+
+  $('edit-outros').innerHTML = EDIT_DATA.outros.map((g,i) => `
+    <div class="edit-row">
+      <div class="edit-row-lbl">${g.grp}</div>
+      <input class="edit-input${g.price==null?' empty-val':''}" type="number" inputmode="numeric" placeholder="—" value="${g.price==null?'':g.price}" onchange="updateEditVal('outros',${i},this.value)">
+    </div>`).join('');
+}
+function updateEditVal(cat, idx, val){
+  const n = val==='' ? null : Number(val);
+  EDIT_DATA[cat][idx].price = (n==null || isNaN(n)) ? null : n;
+}
+function saveEdits(){
+  haptic([20,40,20]);
+  DATA = EDIT_DATA;
+  EDIT_DATA = null;
+  saveToFb();
+  buildAll();
+  $('view-edit').style.display = 'none';
+  setMode('calc');
+  toast('✓ Valores salvos');
+}
+
+// ── PW MODAL ──────────────────────────────────────────────────────
+function openPwModal(){
+  $('pw-field').value = '';
+  $('pw-err').style.display = 'none';
+  $('pw-overlay').classList.add('open');
+  $('pw-sheet').classList.add('open');
+  setTimeout(()=>$('pw-field').focus(), 300);
+}
+function closePwModal(){
+  $('pw-overlay').classList.remove('open');
+  $('pw-sheet').classList.remove('open');
+}
+function pwEnter(){
+  const val = $('pw-field').value;
+  if(val === MGR_PASS){
+    closePwModal();
+    openEditMode();
+  } else {
+    $('pw-err').style.display = 'block';
+    haptic([10,30,10]);
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  $('pw-field') && $('pw-field').addEventListener('keydown', e => { if(e.key==='Enter') pwEnter(); });
+});
+
+// ── BUILD ALL ─────────────────────────────────────────────────────
+function buildAll(){
+  populateModelSelect();
+  buildConsultTable();
+}
+
+// ── STARTUP ──────────────────────────────────────────────────────
+const fbTimeout = setTimeout(()=>{
+  if(!window._fbReady){
+    window._fbOK = false;
+    document.dispatchEvent(new Event('fb-ready'));
+  }
+}, 6000);
+
+document.addEventListener('fb-ready', function(){
+  clearTimeout(fbTimeout);
+  initFirebase();
+  const ld = document.getElementById('loading');
+  if(ld) ld.style.display = 'none';
+  $('main-hdr').style.display = 'block';
+  $('main-wrap').style.display = 'block';
+  $('bnav').style.display = 'flex';
+});
+</script>
+</body>
+</html>
