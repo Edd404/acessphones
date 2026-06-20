@@ -44,10 +44,7 @@
   --r:20px;--rs:14px;
   --red:#ef4444;
 }
-body.dark{
-  --bg:#0f0f0f;--surface:#1a1a1a;--border:#2a2a2a;
-  --text:#f0f0f0;--soft:#555;--muted:#888;--gold-pale:#1e1a10;
-}
+
 html{scroll-behavior:smooth}
 body{
   font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);
@@ -82,7 +79,7 @@ body{
   border-bottom:1px solid var(--border);padding:14px 20px;
   transition:background .3s,border-color .3s;
 }
-body.dark .hdr{background:rgba(15,15,15,.93)}
+
 .hdr-row{display:flex;align-items:center;gap:12px}
 .hdr-back{
   width:34px;height:34px;border-radius:50%;background:var(--surface);
@@ -107,7 +104,7 @@ body.dark .hdr{background:rgba(15,15,15,.93)}
 .sync-bar.online{background:rgba(26,110,63,.08);color:#1a6e3f}
 .sync-bar.offline{background:rgba(239,68,68,.08);color:var(--red)}
 .sync-bar.local{background:rgba(184,150,78,.08);color:var(--gold)}
-body.dark .sync-bar.online{background:rgba(61,184,112,.1);color:#3db870}
+
 
 /* ── MAIN CONTENT ── */
 .main{padding:20px 16px 8px;display:flex;flex-direction:column;gap:24px}
@@ -131,7 +128,7 @@ body.dark .sync-bar.online{background:rgba(61,184,112,.1);color:#3db870}
   -webkit-tap-highlight-color:transparent;
   cursor:pointer;
 }
-body.dark .price-card{box-shadow:0 4px 24px rgba(0,0,0,.4)}
+
 .price-card:active{transform:scale(.985)}
 
 /* Photo fill */
@@ -356,30 +353,14 @@ body.dark .price-card{box-shadow:0 4px 24px rgba(0,0,0,.4)}
   font-size:14px;font-weight:600;color:#fafafa;cursor:pointer;
   -webkit-tap-highlight-color:transparent;transition:all .2s;
 }
-body.dark .up-save{background:var(--gold);color:#000}
+
 .up-save:disabled{opacity:.4;pointer-events:none}
 .up-cancel:active,.up-save:active{transform:scale(.97)}
 
 
 
-body.dark 
 
 
-
-
-
-body.dark 
-
-
-/* ── TOAST ── */
-.toast{
-  position:fixed;bottom:calc(84px + env(safe-area-inset-bottom));
-  left:50%;transform:translateX(-50%) translateY(10px);
-  background:var(--black);color:#fafafa;
-  padding:10px 18px;border-radius:20px;font-size:13px;font-weight:500;
-  opacity:0;transition:all .3s;pointer-events:none;z-index:3000;white-space:nowrap;
-}
-body.dark .toast{background:var(--gold);color:#000}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ── PAGE ANIMATION ── */
@@ -402,7 +383,7 @@ body.dark .toast{background:var(--gold);color:#000}
   transition:background .3s;
 }
 .bnav::-webkit-scrollbar{display:none}
-body.dark .bnav{background:rgba(15,15,15,.93)}
+
 .bni{
   flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:2px;
   cursor:pointer;-webkit-tap-highlight-color:transparent;padding:3px 0;text-decoration:none;
@@ -411,7 +392,7 @@ body.dark .bnav{background:rgba(15,15,15,.93)}
 .bni-ico{font-size:18px;transition:transform .2s}
 .bni-lbl{font-size:9px;font-weight:600;letter-spacing:.03em;color:var(--soft);white-space:nowrap}
 .bni.active .bni-lbl{color:var(--black)}
-body.dark .bni.active .bni-lbl{color:var(--gold)}
+
 .bni.active .bni-ico{transform:scale(1.15)}
 </style>
 </head>
@@ -440,7 +421,6 @@ body.dark .bni.active .bni-lbl{color:var(--gold)}
       <div class="hdr-sub" id="hdr-sub">Acess Phones</div>
     </div>
     <div class="hdr-acts">
-      <button class="ibtn" id="dark-btn" onclick="toggleDark()">🌙</button>
     </div>
   </div>
 </header>
@@ -641,21 +621,6 @@ function getWeekLabel(){
 }
 
 // ── DARK MODE ─────────────────────────────────────────────────────
-function toggleDark(){
-  const d = document.body.classList.toggle('dark');
-  $('dark-btn').textContent = d ? '☀️' : '🌙';
-  try{ localStorage.setItem('acess_dark', d?'1':'0'); }catch(e){}
-}
-function initDark(){
-  try{
-    const pref = localStorage.getItem('acess_dark');
-    const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if(pref === '1' || (pref === null && sysDark)){
-      document.body.classList.add('dark');
-      $('dark-btn').textContent = '☀️';
-    }
-  }catch(e){}
-}
 
 // ── FIREBASE / LOCAL ───────────────────────────────────────────────
 const LOCAL_KEY_CUR = cat => `acess_tabela_${cat}_current`;
@@ -1013,7 +978,6 @@ setTimeout(function(){
 
 // ── STARTUP ──────────────────────────────────────────────────────
 document.addEventListener('fb-ready', function(){
-  initDark();
   loadFirebase();
   renderAll();
   var ld = document.getElementById('loading');

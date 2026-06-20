@@ -42,10 +42,7 @@
   --gold:#b8964e;--gold-l:#d4b06a;--gold-pale:#f5edd8;
   --r:18px;
 }
-body.dark{
-  --bg:#0f0f0f;--surface:#181818;--border:#252525;
-  --text:#f0f0f0;--soft:#4a4a4a;--muted:#888;--gold-pale:#1c1810;
-}
+
 html{scroll-behavior:smooth}
 body{
   font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);
@@ -79,7 +76,7 @@ body{
   border-bottom:1px solid var(--border);
   transition:background .3s,border-color .3s;
 }
-body.dark .hdr{background:rgba(15,15,15,.93)}
+
 .hdr-main{padding:14px 16px;display:flex;align-items:center;gap:12px}
 .hdr-back{
   width:34px;height:34px;border-radius:50%;background:var(--surface);
@@ -145,7 +142,7 @@ body.dark .hdr{background:rgba(15,15,15,.93)}
 .sync-bar.online{background:rgba(26,110,63,.08);color:#1a6e3f}
 .sync-bar.offline{background:rgba(239,68,68,.08);color:#ef4444}
 .sync-bar.local{background:rgba(184,150,78,.08);color:var(--gold)}
-body.dark .sync-bar.online{background:rgba(61,184,112,.1);color:#3db870}
+
 
 /* ── MESSAGE CARDS GRID ──────────────────────────── */
 .msgs-wrap{padding:0 16px;display:flex;flex-direction:column;gap:0}
@@ -197,7 +194,7 @@ body.dark .sync-bar.online{background:rgba(61,184,112,.1);color:#3db870}
   background:var(--gold-pale);color:var(--gold);border-radius:4px;
   padding:1px 5px;flex-shrink:0;
 }
-body.dark .msg-card-var-badge{background:#1c1810}
+
 .msg-card-preview{
   font-size:12px;color:var(--muted);line-height:1.5;
   overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
@@ -213,7 +210,7 @@ body.dark .msg-card-var-badge{background:#1c1810}
   background:transparent;
 }
 .msg-action-copy{background:var(--gold-pale);color:var(--gold)}
-body.dark .msg-action-copy{background:#1c1810}
+
 .msg-action-copy:active{transform:scale(.88);background:var(--gold);color:#fff}
 .msg-action-more{color:var(--soft)}
 .msg-action-more:active{transform:scale(.88);background:var(--border)}
@@ -227,9 +224,7 @@ body.dark .msg-action-copy{background:#1c1810}
   30%{background:var(--gold-pale)}
   100%{background:var(--surface)}
 }
-body.dark .msg-card.copied{
-  animation:copyFlashDark .4s ease;
-}
+
 @keyframes copyFlashDark{
   0%{background:var(--surface)}
   30%{background:#1c1810}
@@ -257,7 +252,7 @@ body.dark .msg-card.copied{
   box-shadow:0 4px 20px rgba(0,0,0,.25);
   transition:all .2s cubic-bezier(.4,0,.2,1);
 }
-body.dark .fab{background:var(--gold);color:#000;box-shadow:0 4px 20px rgba(184,150,78,.3)}
+
 .fab:active{transform:scale(.9)}
 .fab.open{transform:rotate(45deg)}
 
@@ -344,7 +339,7 @@ body.dark .fab{background:var(--gold);color:#000;box-shadow:0 4px 20px rgba(184,
   border-radius:10px;padding:10px 12px;font-size:11px;color:var(--muted);
   line-height:1.5;margin-top:-4px;margin-bottom:12px;
 }
-body.dark .var-hint{background:#1c1810}
+
 .var-hint strong{color:var(--gold)}
 
 /* actions */
@@ -361,7 +356,7 @@ body.dark .var-hint{background:#1c1810}
   font-size:14px;font-weight:600;color:#fafafa;cursor:pointer;
   -webkit-tap-highlight-color:transparent;transition:all .2s;
 }
-body.dark .btn-save{background:var(--gold);color:#000}
+
 .btn-cancel:active,.btn-save:active{transform:scale(.97)}
 .btn-save:disabled{opacity:.4;pointer-events:none}
 
@@ -388,24 +383,8 @@ body.dark .btn-save{background:var(--gold);color:#000}
 
 
 
-body.dark 
 
 
-
-
-
-body.dark 
-
-
-/* ── TOAST ───────────────────────────────────────── */
-.toast{
-  position:fixed;bottom:calc(84px + env(safe-area-inset-bottom));
-  left:50%;transform:translateX(-50%) translateY(10px);
-  background:var(--black);color:#fafafa;
-  padding:10px 18px;border-radius:20px;font-size:13px;font-weight:500;
-  opacity:0;transition:all .3s;pointer-events:none;z-index:3000;white-space:nowrap;
-}
-body.dark .toast{background:var(--gold);color:#000}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ── PAGE ANIMATION ──────────────────────────────── */
@@ -425,7 +404,7 @@ body.dark .toast{background:var(--gold);color:#000}
   transition:background .3s;
 }
 .bnav::-webkit-scrollbar{display:none}
-body.dark .bnav{background:rgba(15,15,15,.93)}
+
 .bni{
   flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:2px;
   cursor:pointer;-webkit-tap-highlight-color:transparent;padding:3px 0;text-decoration:none;
@@ -434,7 +413,7 @@ body.dark .bnav{background:rgba(15,15,15,.93)}
 .bni-ico{font-size:18px;transition:transform .2s}
 .bni-lbl{font-size:9px;font-weight:600;letter-spacing:.03em;color:var(--soft);white-space:nowrap}
 .bni.active .bni-lbl{color:var(--black)}
-body.dark .bni.active .bni-lbl{color:var(--gold)}
+
 .bni.active .bni-ico{transform:scale(1.15)}
 </style>
 </head>
@@ -462,7 +441,6 @@ body.dark .bni.active .bni-lbl{color:var(--gold)}
       <div class="hdr-sub">Respostas rápidas</div>
     </div>
     <div class="hdr-acts">
-      <button class="ibtn" id="dark-btn" onclick="toggleDark()">🌙</button>
     </div>
   </div>
   <!-- Search -->
@@ -633,18 +611,6 @@ function extractVars(msg){
 }
 
 // ── DARK MODE ──────────────────────────────────────────────────────
-function toggleDark(){
-  const d = document.body.classList.toggle('dark');
-  $('dark-btn').textContent = d ? '☀️' : '🌙';
-  try{ localStorage.setItem('acess_dark', d?'1':'0'); }catch(e){}
-}
-function initDark(){
-  try{
-    const p = localStorage.getItem('acess_dark');
-    const sys = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if(p==='1' || (p===null && sys)){ document.body.classList.add('dark'); $('dark-btn').textContent='☀️'; }
-  }catch(e){}
-}
 
 // ── FIREBASE / LOCAL ──────────────────────────────────────────────
 const LS_MSGS = 'acess_arsenal_msgs';
@@ -1094,7 +1060,6 @@ setTimeout(function(){
 
 // ── STARTUP ──────────────────────────────────────────────────────
 document.addEventListener('fb-ready', function(){
-  initDark();
   initFirebase();
   var ld = document.getElementById('loading');
   if(ld) ld.style.display = 'none';
