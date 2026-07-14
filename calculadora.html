@@ -58,8 +58,9 @@ body{
 .price-input{flex:1;background:transparent;border:none;outline:none;font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:#fafafa;line-height:1;caret-color:var(--gold-l)}
 .price-input::placeholder{color:rgba(255,255,255,.2)}
 .price-line{height:1px;background:linear-gradient(90deg,var(--gold) 0%,rgba(184,150,78,.2) 100%);margin-top:10px;border-radius:1px}
-.p-add{width:28px;height:28px;border-radius:50%;background:rgba(184,150,78,.12);border:1px solid rgba(184,150,78,.18);cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:background .18s;outline:none;display:flex;align-items:center;justify-content:center}
-.p-add:active{background:rgba(184,150,78,.25)}
+.p-add{width:38px;height:38px;border-radius:50%;background:rgba(184,150,78,.35);border:2px solid var(--gold-l);cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:all .18s;outline:none;display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px rgba(184,150,78,.3)}
+.p-add::after{content:'✦';font-size:14px;color:var(--gold-l);line-height:1}
+.p-add:active{background:rgba(184,150,78,.55);transform:scale(.9)}
 .price-hint{margin-top:8px;font-size:11px;color:rgba(255,255,255,.3);font-weight:300}
 /* SECTION HEADER */
 .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-top:22px;margin-bottom:10px}
