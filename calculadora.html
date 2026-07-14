@@ -58,6 +58,8 @@ body{
 .price-input{flex:1;background:transparent;border:none;outline:none;font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:#fafafa;line-height:1;caret-color:var(--gold-l)}
 .price-input::placeholder{color:rgba(255,255,255,.2)}
 .price-line{height:1px;background:linear-gradient(90deg,var(--gold) 0%,rgba(184,150,78,.2) 100%);margin-top:10px;border-radius:1px}
+.p-add{width:28px;height:28px;border-radius:50%;background:rgba(184,150,78,.12);border:1px solid rgba(184,150,78,.18);cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:background .18s;outline:none;display:flex;align-items:center;justify-content:center}
+.p-add:active{background:rgba(184,150,78,.25)}
 .price-hint{margin-top:8px;font-size:11px;color:rgba(255,255,255,.3);font-weight:300}
 /* SECTION HEADER */
 .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-top:22px;margin-bottom:10px}
@@ -286,6 +288,7 @@ body{
       <div class="price-row">
         <span class="pcur">R$</span>
         <input class="price-input" id="price-input" type="text" inputmode="numeric" placeholder="0" autocomplete="off" oninput="onPriceInput(this)">
+        <button class="p-add" onclick="addHundred()" tabindex="-1"></button>
       </div>
       <div class="price-line"></div>
       <div class="price-hint">Digite o valor à vista para calcular</div>
@@ -476,6 +479,11 @@ function onPriceInput(el){
   render();
 }
 
+function addHundred(){
+  currentPrice = (currentPrice||0) + 100;
+  render();
+}
+
 function updateOrcBtn(){
   document.getElementById('orc-wrap').style.display=(currentPrice&&currentPrice>0)?'block':'none';
 }
@@ -502,8 +510,7 @@ function setFilter(val){
     if(lastGroup&&lastGroup!==rate.group)html+=`<div class="divider"><div class="dvl"></div><div class="dvt">Crédito</div><div class="dvl"></div></div>`;
     lastGroup=rate.group;
     const hl=rate.label==='Débito',bv=!hl&&rate.label==='Crédito à Vista';
-    const pct=((interest/p)*100).toFixed(1).replace('.',',');
-    const itext=free?'Sem juros':`+R$ ${fmt(interest)} (${pct}%)`;
+    const itext=free?'Sem juros':'';
     const ptext=rate.n===1?'Pagamento único':`${rate.n}x de R$ ${fmt(parcel)}`;
     html+=`<div class="rcard${hl?' hl':''}${bv?' bv':''}" onclick="copyCard('${rate.label}',${total},${parcel},${rate.n})">${bv?'<div class="best-tag">✦ Melhor opção</div>':''}<div><div class="rm">${rate.label}</div><div class="rs${free?' free':''}">${itext}</div></div><div class="rr"><div class="rt">R$ ${fmt(total)}</div><div class="rp">${ptext}</div></div></div>`;
   });
@@ -825,8 +832,7 @@ function _gRender(){
     if(lastGroup&&lastGroup!==rate.group)html+=`<div class="divider"><div class="dvl"></div><div class="dvt">Crédito</div><div class="dvl"></div></div>`;
     lastGroup=rate.group;
     const hl=rate.label==='Débito',bv=!hl&&rate.label==='Crédito à Vista';
-    const pct=((interest/p)*100).toFixed(1).replace('.',',');
-    const itext=free?'Sem juros':`+R$ ${_fmtG(interest)} (${pct}%)`;
+    const itext=free?'Sem juros':'';
     const ptext=rate.n===1?'Pagamento único':`${rate.n}x de R$ ${_fmtG(parcel)}`;
     html+=`<div class="rcard${hl?' hl':''}${bv?' bv':''}" onclick="_gCopyCard('${rate.label}',${total},${parcel},${rate.n})">${bv?'<div class="best-tag">✦ Melhor opção</div>':''}<div><div class="rm">${rate.label}</div><div class="rs${free?' free':''}">${itext}</div></div><div class="rr"><div class="rt">R$ ${_fmtG(total)}</div><div class="rp">${ptext}</div></div></div>`;
   });
