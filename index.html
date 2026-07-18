@@ -218,6 +218,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .proj-day-bar{flex:1;border-radius:3px 3px 0 0;transition:height .4s ease;min-height:3px}
 
 
+.day-hero{background:var(--black);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.day-hero-row{display:flex;align-items:center;justify-content:space-between}
 .day-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(184,150,78,.18) 0%,transparent 70%);pointer-events:none}
 .dh-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:3px}
 .dh-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--gold-l);line-height:1;transition:all .3s}
@@ -715,30 +717,32 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
       </div>
     </div>
     <div class="day-hero">
-      <div>
-        <div class="dh-lbl">Total do dia</div>
-        <div class="dh-val" id="dh-val">R$ 0,00</div>
-        <div class="goal-bar-wrap" id="goal-bar-wrap" style="display:none">
-          <div class="goal-bar-fill" id="goal-bar-fill" style="width:0%"></div>
+      <div class="day-hero-row">
+        <div>
+          <div class="dh-lbl">Total do dia</div>
+          <div class="dh-val" id="dh-val">R$ 0,00</div>
+          <div class="goal-bar-wrap" id="goal-bar-wrap" style="display:none">
+            <div class="goal-bar-fill" id="goal-bar-fill" style="width:0%"></div>
+          </div>
+          <div class="goal-lbl" id="goal-lbl"></div>
+          <button class="goal-set-btn" onclick="openGoalModal()">🎯 definir meta</button>
         </div>
-        <div class="goal-lbl" id="goal-lbl"></div>
-        <button class="goal-set-btn" onclick="openGoalModal()">🎯 definir meta</button>
+        <div style="text-align:right">
+          <div class="dh-cnt" id="dh-cnt">0</div>
+          <div class="dh-cntlbl">registro<span id="dh-s">s</span></div>
+          <div class="dh-best" id="dh-best"></div>
+        </div>
       </div>
-      <div style="text-align:right">
-        <div class="dh-cnt" id="dh-cnt">0</div>
-        <div class="dh-cntlbl">registro<span id="dh-s">s</span></div>
-        <div class="dh-best" id="dh-best"></div>
-      </div>
-    </div>
-    <div class="proj-card" id="proj-card" onclick="openProjSheet()" style="display:none">
-      <div class="proj-left">
-        <div class="proj-lbl">Projeção do mês</div>
-        <div class="proj-val" id="proj-card-val">R$ —</div>
-        <div class="proj-sub" id="proj-card-sub">calculando...</div>
-      </div>
-      <div class="proj-right">
-        <div class="proj-badge eq" id="proj-card-badge">—</div>
-        <div class="proj-arrow">↗ ver análise</div>
+      <div class="proj-card" id="proj-card" onclick="openProjSheet()" style="display:none">
+        <div class="proj-left">
+          <div class="proj-lbl">Projeção do mês</div>
+          <div class="proj-val" id="proj-card-val">R$ —</div>
+          <div class="proj-sub" id="proj-card-sub">calculando...</div>
+        </div>
+        <div class="proj-right">
+          <div class="proj-badge eq" id="proj-card-badge">—</div>
+          <div class="proj-arrow">↗ ver análise</div>
+        </div>
       </div>
     </div>
   </header>
