@@ -160,8 +160,63 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 #pwa-mini-btn{animation:pwaPulse 2.5s ease 1s 3}
 @keyframes pwaPulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 4px rgba(184,150,78,.25)}}
 
-/* DAY HERO */
-.day-hero{background:var(--black);border-radius:16px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;overflow:hidden;position:relative}
+/* PROJ CARD */
+.proj-card{margin:8px 0 0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:13px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .2s;gap:10px}
+.proj-card:active{background:rgba(255,255,255,.12)}
+.proj-left{display:flex;flex-direction:column;gap:2px;min-width:0}
+.proj-lbl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.proj-val{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--gold-l);line-height:1}
+.proj-sub{font-size:9.5px;color:rgba(255,255,255,.4);font-weight:500;white-space:nowrap}
+.proj-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.proj-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.proj-badge.up{background:rgba(26,110,63,.35);color:#4cdb8a}
+.proj-badge.down{background:rgba(180,40,40,.3);color:#ff8a7a}
+.proj-badge.eq{background:rgba(184,150,78,.2);color:var(--gold-l)}
+.proj-arrow{font-size:11px;color:rgba(255,255,255,.25)}
+
+/* PROJ SHEET */
+.proj-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:400;opacity:0;pointer-events:none;transition:opacity .3s}
+.proj-overlay.open{opacity:1;pointer-events:all}
+.proj-sheet{position:fixed;left:0;right:0;bottom:0;z-index:401;background:var(--surface);border-radius:26px 26px 0 0;padding:0 0 calc(28px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .38s cubic-bezier(.32,.72,0,1);max-height:92dvh;overflow-y:auto;max-width:560px;margin:0 auto}
+.proj-sheet.open{transform:translateY(0)}
+.proj-sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:14px auto 0}
+.proj-sheet-head{padding:18px 22px 14px;border-bottom:1px solid var(--border)}
+.proj-sheet-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin-bottom:2px}
+.proj-sheet-sub{font-size:12px;color:var(--muted)}
+.proj-body{padding:18px 22px;display:flex;flex-direction:column;gap:14px}
+
+/* PROJ STAT BLOCKS */
+.proj-section-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.proj-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.proj-stat{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:14px 15px}
+.proj-stat.full{grid-column:1/-1}
+.proj-stat.highlight{background:linear-gradient(135deg,#fff,var(--gold-pale));border-color:rgba(184,150,78,.35)}
+.proj-stat-lbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.proj-stat-val{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--text);line-height:1}
+.proj-stat-val.gold{color:var(--gold)}
+.proj-stat-detail{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.5}
+
+/* PROJ PROGRESS BAR */
+.proj-prog-wrap{height:8px;background:var(--border);border-radius:4px;margin-top:10px;overflow:hidden}
+.proj-prog-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.proj-prog-fill.green{background:linear-gradient(90deg,#1a6e3f,#4cdb8a)}
+.proj-prog-fill.gold{background:linear-gradient(90deg,var(--gold),var(--gold-l))}
+.proj-prog-fill.red{background:linear-gradient(90deg,#8b1a1a,#ff6b6b)}
+
+/* PROJ VS LAST MONTH */
+.proj-cmp-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.proj-cmp-row:last-child{border-bottom:none}
+.proj-cmp-lbl{font-size:13px;color:var(--muted);font-weight:500}
+.proj-cmp-val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text)}
+.proj-cmp-delta{font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:8px}
+.proj-cmp-delta.pos{background:rgba(26,110,63,.12);color:var(--green)}
+.proj-cmp-delta.neg{background:rgba(180,40,40,.1);color:#c0392b}
+
+/* PROJ RHYTHM */
+.proj-rhythm{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:14px 15px}
+.proj-rhythm-bar{display:flex;gap:3px;margin-top:10px;align-items:flex-end;height:36px}
+.proj-day-bar{flex:1;border-radius:3px 3px 0 0;transition:height .4s ease;min-height:3px}
+
 
 .day-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(184,150,78,.18) 0%,transparent 70%);pointer-events:none}
 .dh-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:3px}
@@ -675,6 +730,17 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
         <div class="dh-best" id="dh-best"></div>
       </div>
     </div>
+    <div class="proj-card" id="proj-card" onclick="openProjSheet()" style="display:none">
+      <div class="proj-left">
+        <div class="proj-lbl">Projeção do mês</div>
+        <div class="proj-val" id="proj-card-val">R$ —</div>
+        <div class="proj-sub" id="proj-card-sub">calculando...</div>
+      </div>
+      <div class="proj-right">
+        <div class="proj-badge eq" id="proj-card-badge">—</div>
+        <div class="proj-arrow">↗ ver análise</div>
+      </div>
+    </div>
   </header>
 
   <main class="main" id="main-scroll">
@@ -694,6 +760,110 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
     <button class="rpt-btn" onclick="openReport()">📊 &nbsp;Gerar Relatório do Dia</button>
     <button style="margin-top:10px;width:100%;background:transparent;border:1.5px solid var(--border);border-radius:14px;padding:16px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="openRangeModal('resumo')">📅 &nbsp;Resumo por Período</button>
     <button style="margin-top:10px;width:100%;background:transparent;border:1.5px solid var(--border);border-radius:14px;padding:16px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;-webkit-tap-highlight-color:transparent;" onclick="openRangeModal('excel')">📊 &nbsp;Exportar Excel Premium</button>
+  </div>
+</div>
+
+<!-- PROJECTION SHEET -->
+<div class="proj-overlay" id="proj-overlay" onclick="closeProjSheet()"></div>
+<div class="proj-sheet" id="proj-sheet">
+  <div class="proj-sheet-handle"></div>
+  <div class="proj-sheet-head">
+    <div class="proj-sheet-title">📈 Projeção de Ganhos</div>
+    <div class="proj-sheet-sub" id="proj-sheet-sub">Baseado no seu ritmo atual</div>
+  </div>
+  <div class="proj-body">
+
+    <div>
+      <div class="proj-section-lbl">🎯 Projeção do mês</div>
+      <div class="proj-stat-grid">
+        <div class="proj-stat highlight full">
+          <div class="proj-stat-lbl">Projeção total se mantiver o ritmo</div>
+          <div class="proj-stat-val gold" id="ps-proj-total">R$ —</div>
+          <div class="proj-stat-detail" id="ps-proj-detail">—</div>
+          <div class="proj-prog-wrap"><div class="proj-prog-fill gold" id="ps-proj-bar" style="width:0%"></div></div>
+        </div>
+        <div class="proj-stat">
+          <div class="proj-stat-lbl">Já ganhou este mês</div>
+          <div class="proj-stat-val" id="ps-month-total">R$ 0</div>
+          <div class="proj-stat-detail" id="ps-month-detail">—</div>
+        </div>
+        <div class="proj-stat">
+          <div class="proj-stat-lbl">Falta ganhar</div>
+          <div class="proj-stat-val" id="ps-remaining">R$ —</div>
+          <div class="proj-stat-detail" id="ps-remaining-detail">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="proj-section-lbl">📅 Dias trabalhados</div>
+      <div class="proj-stat-grid">
+        <div class="proj-stat">
+          <div class="proj-stat-lbl">Dias com registro</div>
+          <div class="proj-stat-val" id="ps-days-worked">0</div>
+          <div class="proj-stat-detail" id="ps-days-worked-detail">—</div>
+        </div>
+        <div class="proj-stat">
+          <div class="proj-stat-lbl">Dias úteis restantes</div>
+          <div class="proj-stat-val" id="ps-days-left">0</div>
+          <div class="proj-stat-detail" id="ps-days-left-detail">—</div>
+        </div>
+        <div class="proj-stat full">
+          <div class="proj-stat-lbl">Progresso do mês</div>
+          <div class="proj-stat-detail" id="ps-month-progress-lbl">—</div>
+          <div class="proj-prog-wrap" style="margin-top:8px"><div class="proj-prog-fill green" id="ps-month-progress-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="proj-section-lbl">📊 Médias e ritmo</div>
+      <div class="proj-stat-grid">
+        <div class="proj-stat">
+          <div class="proj-stat-lbl">Média por dia trabalhado</div>
+          <div class="proj-stat-val" id="ps-avg-day">R$ —</div>
+          <div class="proj-stat-detail" id="ps-avg-day-detail">—</div>
+        </div>
+        <div class="proj-stat">
+          <div class="proj-stat-lbl">Média por venda</div>
+          <div class="proj-stat-val" id="ps-avg-sale">R$ —</div>
+          <div class="proj-stat-detail" id="ps-avg-sale-detail">—</div>
+        </div>
+        <div class="proj-stat full">
+          <div class="proj-stat-lbl">Melhor dia do mês</div>
+          <div class="proj-stat-val" id="ps-best-day">R$ —</div>
+          <div class="proj-stat-detail" id="ps-best-day-detail">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="proj-section-lbl">🔄 Comparação com mês anterior</div>
+      <div class="proj-stat" style="border-radius:16px;padding:6px 15px">
+        <div class="proj-cmp-row">
+          <div class="proj-cmp-lbl">Mês atual (até hoje)</div>
+          <div style="display:flex;align-items:center"><div class="proj-cmp-val" id="ps-cmp-cur">R$ —</div></div>
+        </div>
+        <div class="proj-cmp-row">
+          <div class="proj-cmp-lbl">Mês anterior (mesmo período)</div>
+          <div style="display:flex;align-items:center"><div class="proj-cmp-val" id="ps-cmp-prev-period">R$ —</div></div>
+        </div>
+        <div class="proj-cmp-row">
+          <div class="proj-cmp-lbl">Mês anterior (total)</div>
+          <div style="display:flex;align-items:center">
+            <div class="proj-cmp-val" id="ps-cmp-prev-total">R$ —</div>
+            <div class="proj-cmp-delta" id="ps-cmp-delta"></div>
+          </div>
+        </div>
+        <div class="proj-cmp-row" style="border-bottom:none">
+          <div class="proj-cmp-lbl">Variação da projeção</div>
+          <div style="display:flex;align-items:center">
+            <div class="proj-cmp-val" id="ps-cmp-proj-delta">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1450,6 +1620,191 @@ function updateHero(){
   if(best){const it=ITEMS.find(x=>x.id===best[0]);document.getElementById('dh-best').textContent=`${it.emoji} ${it.label} em destaque`;}
   else document.getElementById('dh-best').textContent='';
   updateGoalDisplay(total);
+  updateProj();
+}
+
+// ── PROJEÇÃO DE GANHOS ────────────────────────────────────────────
+const WORK_DAYS_PER_WEEK = 6; // seg–sáb
+
+function workDaysInMonth(year, month) {
+  // conta dias seg–sáb no mês (0=jan)
+  const d = new Date(year, month + 1, 0).getDate();
+  let c = 0;
+  for (let i = 1; i <= d; i++) {
+    const wd = new Date(year, month, i).getDay();
+    if (wd !== 0) c++; // 0=domingo
+  }
+  return c;
+}
+
+function workDaysUpTo(year, month, dayOfMonth) {
+  let c = 0;
+  for (let i = 1; i <= dayOfMonth; i++) {
+    const wd = new Date(year, month, i).getDay();
+    if (wd !== 0) c++;
+  }
+  return c;
+}
+
+function updateProj() {
+  if (!cSeller) return;
+  const entries = getLocalEntries(cSeller.id);
+  const now = new Date();
+  const yr = now.getFullYear(), mo = now.getMonth(), dom = now.getDate();
+
+  // ── Mês atual ──
+  const pfx = `${yr}-${pad(mo + 1)}-`;
+  const thisMonthEntries = entries.filter(e => e.date && e.date.startsWith(pfx));
+  const monthTotal = thisMonthEntries.reduce((s, e) => s + e.value, 0);
+
+  // dias com pelo menos 1 registro no mês
+  const workedDaysSet = new Set(thisMonthEntries.map(e => e.date));
+  const daysWorked = workedDaysSet.size;
+  const totalSales = thisMonthEntries.length;
+
+  // dias úteis do mês inteiro e até hoje
+  const totalWorkDays = workDaysInMonth(yr, mo);
+  const workDaysSoFar = workDaysUpTo(yr, mo, dom);
+  const workDaysLeft = totalWorkDays - workDaysSoFar;
+
+  // médias
+  const avgPerWorkedDay = daysWorked > 0 ? monthTotal / daysWorked : 0;
+  const avgPerSale = totalSales > 0 ? monthTotal / totalSales : 0;
+
+  // projeção: usa a média dos dias trabalhados * total de dias úteis do mês
+  const projected = avgPerWorkedDay * totalWorkDays;
+  const remaining = Math.max(0, projected - monthTotal);
+
+  // melhor dia
+  const byDay = {};
+  thisMonthEntries.forEach(e => { byDay[e.date] = (byDay[e.date] || 0) + e.value; });
+  const bestDayEntry = Object.entries(byDay).sort((a, b) => b[1] - a[1])[0];
+
+  // ── Mês anterior ──
+  const prevMo = mo === 0 ? 11 : mo - 1;
+  const prevYr = mo === 0 ? yr - 1 : yr;
+  const prevPfx = `${prevYr}-${pad(prevMo + 1)}-`;
+  const prevEntries = entries.filter(e => e.date && e.date.startsWith(prevPfx));
+  const prevTotal = prevEntries.reduce((s, e) => s + e.value, 0);
+
+  // mesmo período do mês anterior (até o mesmo dia do mês)
+  const prevPeriodEntries = prevEntries.filter(e => {
+    const d = parseInt(e.date.split('-')[2], 10);
+    return d <= dom;
+  });
+  const prevPeriodTotal = prevPeriodEntries.reduce((s, e) => s + e.value, 0);
+
+  // variação da projeção vs total mês anterior
+  const projDelta = prevTotal > 0 ? ((projected - prevTotal) / prevTotal * 100) : null;
+  const curVsPrev = prevPeriodTotal > 0 ? ((monthTotal - prevPeriodTotal) / prevPeriodTotal * 100) : null;
+
+  // ── Atualiza card resumo ──
+  const card = document.getElementById('proj-card');
+  if (!card) return;
+
+  if (daysWorked === 0) { card.style.display = 'none'; return; }
+  card.style.display = 'flex';
+
+  document.getElementById('proj-card-val').textContent = `R$ ${fmt(projected)}`;
+  document.getElementById('proj-card-sub').textContent =
+    `${daysWorked} dia${daysWorked !== 1 ? 's' : ''} trabalhado${daysWorked !== 1 ? 's' : ''} · média R$ ${fmt(avgPerWorkedDay)}/dia`;
+
+  const badge = document.getElementById('proj-card-badge');
+  if (projDelta !== null) {
+    const sign = projDelta >= 0 ? '+' : '';
+    badge.textContent = `${sign}${projDelta.toFixed(0)}% vs mês ant.`;
+    badge.className = 'proj-badge ' + (projDelta >= 5 ? 'up' : projDelta <= -5 ? 'down' : 'eq');
+  } else {
+    badge.textContent = '1º mês';
+    badge.className = 'proj-badge eq';
+  }
+
+  // ── Atualiza sheet ──
+  const pct = Math.min(100, totalWorkDays > 0 ? (monthTotal / projected * 100) : 0);
+  document.getElementById('ps-proj-total').textContent = `R$ ${fmt(projected)}`;
+  document.getElementById('ps-proj-detail').textContent =
+    `Média de R$ ${fmt(avgPerWorkedDay)}/dia × ${totalWorkDays} dias úteis no mês`;
+  document.getElementById('ps-proj-bar').style.width = pct + '%';
+
+  document.getElementById('ps-month-total').textContent = `R$ ${fmt(monthTotal)}`;
+  document.getElementById('ps-month-detail').textContent =
+    `${totalSales} venda${totalSales !== 1 ? 's' : ''} em ${daysWorked} dia${daysWorked !== 1 ? 's' : ''}`;
+
+  document.getElementById('ps-remaining').textContent = `R$ ${fmt(remaining)}`;
+  document.getElementById('ps-remaining-detail').textContent =
+    workDaysLeft > 0
+      ? `${workDaysLeft} dia${workDaysLeft !== 1 ? 's' : ''} útil${workDaysLeft !== 1 ? 'eis' : ''} restante${workDaysLeft !== 1 ? 's' : ''} — R$ ${fmt(remaining / workDaysLeft)}/dia`
+      : 'Último dia útil do mês';
+
+  document.getElementById('ps-days-worked').textContent = daysWorked;
+  document.getElementById('ps-days-worked-detail').textContent =
+    `de ${workDaysSoFar} dia${workDaysSoFar !== 1 ? 's' : ''} útil${workDaysSoFar !== 1 ? 'eis' : ''} até hoje`;
+
+  document.getElementById('ps-days-left').textContent = workDaysLeft;
+  document.getElementById('ps-days-left-detail').textContent =
+    `de ${totalWorkDays} dias úteis no mês`;
+
+  const moPct = totalWorkDays > 0 ? Math.min(100, (workDaysSoFar / totalWorkDays * 100)) : 0;
+  document.getElementById('ps-month-progress-lbl').textContent =
+    `${workDaysSoFar} de ${totalWorkDays} dias úteis (${moPct.toFixed(0)}% do mês)`;
+  document.getElementById('ps-month-progress-bar').style.width = moPct + '%';
+
+  document.getElementById('ps-avg-day').textContent = `R$ ${fmt(avgPerWorkedDay)}`;
+  document.getElementById('ps-avg-day-detail').textContent =
+    `nos ${daysWorked} dia${daysWorked !== 1 ? 's' : ''} com registro`;
+
+  document.getElementById('ps-avg-sale').textContent = `R$ ${fmt(avgPerSale)}`;
+  document.getElementById('ps-avg-sale-detail').textContent =
+    `${totalSales} venda${totalSales !== 1 ? 's' : ''} registrada${totalSales !== 1 ? 's' : ''}`;
+
+  if (bestDayEntry) {
+    const [bd, bv] = bestDayEntry;
+    const bDate = new Date(bd + 'T12:00:00');
+    document.getElementById('ps-best-day').textContent = `R$ ${fmt(bv)}`;
+    document.getElementById('ps-best-day-detail').textContent =
+      bDate.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+
+  // comparação
+  document.getElementById('ps-cmp-cur').textContent = `R$ ${fmt(monthTotal)}`;
+  document.getElementById('ps-cmp-prev-period').textContent =
+    prevPeriodTotal > 0 ? `R$ ${fmt(prevPeriodTotal)}` : 'Sem dados';
+  document.getElementById('ps-cmp-prev-total').textContent =
+    prevTotal > 0 ? `R$ ${fmt(prevTotal)}` : 'Sem dados';
+
+  const deltaEl = document.getElementById('ps-cmp-delta');
+  if (curVsPrev !== null) {
+    const s = curVsPrev >= 0 ? '+' : '';
+    deltaEl.textContent = `${s}${curVsPrev.toFixed(0)}%`;
+    deltaEl.className = 'proj-cmp-delta ' + (curVsPrev >= 0 ? 'pos' : 'neg');
+  } else {
+    deltaEl.textContent = '';
+  }
+
+  const projDeltaEl = document.getElementById('ps-cmp-proj-delta');
+  if (projDelta !== null) {
+    const s = projDelta >= 0 ? '+' : '';
+    projDeltaEl.textContent = `R$ ${fmt(projected)} (${s}${projDelta.toFixed(0)}% vs R$ ${fmt(prevTotal)})`;
+    projDeltaEl.style.color = projDelta >= 0 ? 'var(--green)' : '#c0392b';
+  } else {
+    projDeltaEl.textContent = '1º mês com dados';
+    projDeltaEl.style.color = 'var(--muted)';
+  }
+
+  // subtítulo do sheet
+  const mo_names = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  document.getElementById('proj-sheet-sub').textContent =
+    `${mo_names[mo]} ${yr} · atualizado agora`;
+}
+
+function openProjSheet() {
+  haptic(6);
+  document.getElementById('proj-overlay').classList.add('open');
+  document.getElementById('proj-sheet').classList.add('open');
+}
+function closeProjSheet() {
+  document.getElementById('proj-overlay').classList.remove('open');
+  document.getElementById('proj-sheet').classList.remove('open');
 }
 
 // ── DAY TABS ─────────────────────────────────────────────────────
